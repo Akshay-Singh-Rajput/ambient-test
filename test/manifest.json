@@ -1,0 +1,21 @@
+{
+  "fixtures": [
+    { "id": "production", "name": "Production config", "description": "Mirror of published config.json", "group": "baseline" },
+    { "id": "theme-dark", "name": "Theme: Dark", "description": "Dark theme only", "group": "themes" },
+    { "id": "theme-light", "name": "Theme: Light", "description": "Light theme only", "group": "themes" },
+    { "id": "theme-midnight", "name": "Theme: Midnight", "description": "Midnight theme only", "group": "themes" },
+    { "id": "theme-minimal", "name": "Theme: Minimal", "description": "Minimal monochrome theme", "group": "themes" },
+    { "id": "layout-center", "name": "Layout: Center", "description": "Centered widget layout", "group": "layouts" },
+    { "id": "layout-stack", "name": "Layout: Stack", "description": "Vertical stack layout", "group": "layouts" },
+    { "id": "layout-grid", "name": "Layout: Grid", "description": "Two-column grid layout", "group": "layouts" },
+    { "id": "layout-fullscreen", "name": "Layout: Fullscreen", "description": "Fullscreen widget layout", "group": "layouts" },
+    { "id": "layout-top-bottom", "name": "Layout: Top-bottom", "description": "Top and bottom placement", "group": "layouts" },
+    { "id": "scene-morning", "name": "Scene: Morning", "description": "Morning scene forced", "group": "scenes", "forceScene": "morning" },
+    { "id": "scene-day", "name": "Scene: Day", "description": "Day scene forced", "group": "scenes", "forceScene": "day" },
+    { "id": "scene-evening", "name": "Scene: Evening", "description": "Evening scene forced", "group": "scenes", "forceScene": "evening" },
+    { "id": "scene-night", "name": "Scene: Night", "description": "Night scene forced", "group": "scenes", "forceScene": "night" },
+    { "id": "widget-clock-12h", "name": "Widget: Clock 12h", "description": "12-hour clock with seconds", "group": "widgets" },
+    { "id": "widget-clock-24h", "name": "Widget: Clock 24h", "description": "24-hour clock, no seconds", "group": "widgets" },
+    { "id": "scheduler-live", "name": "Scheduler: Live", "description": "Full scheduler — scene follows local time", "group": "scheduler" }
+  ]
+}

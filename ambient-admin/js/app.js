@@ -105,6 +105,7 @@
       document.getElementById('asset-grid')
     );
     AmbientAdmin.publish.bind();
+    AmbientAdmin.preview.bind();
     AmbientAdmin.publish.validateAndShow();
     updateDraftStatus();
   }

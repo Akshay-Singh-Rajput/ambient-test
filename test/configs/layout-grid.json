@@ -1,0 +1,10 @@
+{
+  "version": "test-layout-grid",
+  "scheduler": { "enabled": false },
+  "theme": { "name": "dark" },
+  "layout": { "type": "grid", "gap": "1rem", "padding": "2rem", "columns": 2 },
+  "widgets": [
+    { "type": "clock", "id": "clock-a", "size": { "width": "auto", "height": "auto" }, "options": { "showSeconds": true, "showDate": false, "hourFormat": "12", "timezone": "Asia/Kolkata" } },
+    { "type": "clock", "id": "clock-b", "size": { "width": "auto", "height": "auto" }, "options": { "showSeconds": false, "showDate": true, "hourFormat": "24", "timezone": "UTC" } }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "version": "test-widget-clock-24h",
+  "scheduler": { "enabled": false },
+  "theme": { "name": "dark" },
+  "layout": { "type": "center", "gap": "2rem", "padding": "2rem" },
+  "widgets": [{
+    "type": "clock",
+    "id": "clock-24h",
+    "size": { "width": "auto", "height": "auto" },
+    "options": { "showSeconds": false, "showDate": true, "hourFormat": "24", "timezone": "Asia/Kolkata" }
+  }]
+}

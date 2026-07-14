@@ -1,0 +1,99 @@
+{
+  "version": "1.0.0",
+  "scheduler": {
+    "enabled": true,
+    "scenes": [
+      {
+        "id": "morning",
+        "start": "05:00",
+        "theme": { "name": "light" },
+        "layout": { "type": "center", "gap": "2rem", "padding": "2rem" },
+        "widgets": [
+          {
+            "type": "clock",
+            "id": "morning-clock",
+            "size": { "width": "auto", "height": "auto" },
+            "options": {
+              "showSeconds": true,
+              "showDate": true,
+              "hourFormat": "12",
+              "timezone": "Asia/Kolkata"
+            }
+          }
+        ]
+      },
+      {
+        "id": "day",
+        "start": "09:00",
+        "theme": { "name": "light" },
+        "layout": { "type": "center", "gap": "2rem", "padding": "2rem" },
+        "widgets": [
+          {
+            "type": "clock",
+            "id": "day-clock",
+            "size": { "width": "auto", "height": "auto" },
+            "options": {
+              "showSeconds": true,
+              "showDate": true,
+              "hourFormat": "24",
+              "timezone": "Asia/Kolkata"
+            }
+          }
+        ]
+      },
+      {
+        "id": "evening",
+        "start": "17:00",
+        "theme": { "name": "dark" },
+        "layout": { "type": "center", "gap": "2rem", "padding": "2rem" },
+        "widgets": [
+          {
+            "type": "clock",
+            "id": "evening-clock",
+            "size": { "width": "auto", "height": "auto" },
+            "options": {
+              "showSeconds": true,
+              "showDate": true,
+              "hourFormat": "12",
+              "timezone": "Asia/Kolkata"
+            }
+          }
+        ]
+      },
+      {
+        "id": "night",
+        "start": "21:00",
+        "theme": { "name": "midnight" },
+        "layout": { "type": "center", "gap": "2rem", "padding": "2rem" },
+        "widgets": [
+          {
+            "type": "clock",
+            "id": "night-clock",
+            "size": { "width": "auto", "height": "auto" },
+            "options": {
+              "showSeconds": false,
+              "showDate": true,
+              "hourFormat": "12",
+              "timezone": "Asia/Kolkata"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "theme": { "name": "dark" },
+  "layout": { "type": "center", "gap": "2rem", "padding": "2rem", "columns": 2 },
+  "widgets": [
+    {
+      "type": "clock",
+      "id": "primary-clock",
+      "size": { "width": "auto", "height": "auto" },
+      "options": {
+        "showSeconds": true,
+        "showDate": true,
+        "hourFormat": "12",
+        "timezone": "Asia/Kolkata"
+      }
+    }
+  ]
+}

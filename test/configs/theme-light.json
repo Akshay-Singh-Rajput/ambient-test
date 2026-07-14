@@ -1,0 +1,7 @@
+{
+  "version": "test-theme-light",
+  "scheduler": { "enabled": false },
+  "theme": { "name": "light" },
+  "layout": { "type": "center", "gap": "2rem", "padding": "2rem" },
+  "widgets": [{ "type": "clock", "id": "clock", "size": { "width": "auto", "height": "auto" }, "options": { "showSeconds": true, "showDate": true, "hourFormat": "12", "timezone": "Asia/Kolkata" } }]
+}

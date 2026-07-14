@@ -66,10 +66,31 @@
       <!-- Preview panel -->
       <section class="admin-panel" id="panel-preview">
         <div class="admin-panel__header">
-          <h2>Config preview</h2>
-          <p>Read-only JSON that will be written to <code>config/config.json</code>.</p>
+          <h2>Live preview</h2>
+          <p>Draft config rendered in the display test harness — updates as you edit.</p>
         </div>
-        <pre class="admin-code" id="config-preview"></pre>
+        <div class="admin-preview-controls">
+          <label class="admin-field">
+            <span class="admin-field__label">Force scene (optional)</span>
+            <select id="preview-scene-select" class="admin-input">
+              <option value="">Scheduler decides (local time)</option>
+              <option value="morning">morning</option>
+              <option value="day">day</option>
+              <option value="evening">evening</option>
+              <option value="night">night</option>
+            </select>
+          </label>
+          <button type="button" class="admin-btn admin-btn--ghost" id="btn-preview-refresh">Refresh preview</button>
+          <a class="admin-btn admin-btn--ghost" href="../ambient-display/test/index.html" target="_blank">Open harness</a>
+          <a class="admin-btn admin-btn--ghost" href="../test/" target="_blank">Test hub</a>
+        </div>
+        <div class="admin-preview-frame-wrap">
+          <iframe id="display-preview-frame" class="admin-preview-frame" src="../ambient-display/test/index.html?preview=1" title="Display preview"></iframe>
+        </div>
+        <details class="admin-preview-json">
+          <summary>Config JSON</summary>
+          <pre class="admin-code" id="config-preview"></pre>
+        </details>
       </section>
 
       <!-- Publish panel -->
@@ -98,6 +119,7 @@
   <script src="js/asset-library.js"></script>
   <script src="js/scene-editor.js"></script>
   <script src="js/publish.js"></script>
+  <script src="js/preview.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>
