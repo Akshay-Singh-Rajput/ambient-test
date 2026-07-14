@@ -1,0 +1,26 @@
+{
+  "version": "1.0.0",
+  "assets": [
+    "./",
+    "./index.html",
+    "./cache-manifest.json",
+    "./css/app.css",
+    "./css/themes.css",
+    "./css/layouts.css",
+    "./css/assets.css",
+    "./widgets/clock.css",
+    "./js/storage.js",
+    "./js/config-loader.js",
+    "./js/theme-engine.js",
+    "./js/layout-engine.js",
+    "./js/asset-manager.js",
+    "./js/widget-registry.js",
+    "./js/renderer.js",
+    "./js/scheduler.js",
+    "./js/sw-register.js",
+    "./js/app.js",
+    "./widgets/clock.js",
+    "./config/config.json",
+    "./service-worker.js"
+  ]
+}

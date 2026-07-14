@@ -1,0 +1,253 @@
+/**
+ * layouts.css — Layout styles for Ambient Display
+ *
+ * Layout modes are toggled via classes applied by js/layout-engine.js from
+ * config.json. Spacing is driven by --layout-gap and --layout-padding variables.
+ */
+
+/* --- Base layout shell --- */
+
+.ambient-layout {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+/* --- Widget container base (no fixed dimensions) --- */
+
+.ambient-widget {
+  box-sizing: border-box;
+  min-width: 0;
+  min-height: 0;
+}
+
+/* --- Widget width tokens --- */
+
+.ambient-widget-size--w-auto {
+  width: auto;
+  max-width: 100%;
+}
+
+.ambient-widget-size--w-full {
+  width: 100%;
+}
+
+.ambient-widget-size--w-half {
+  width: 50%;
+}
+
+.ambient-widget-size--w-third {
+  width: 33.333%;
+}
+
+.ambient-widget-size--w-quarter {
+  width: 25%;
+}
+
+/* --- Widget height tokens --- */
+
+.ambient-widget-size--h-auto {
+  height: auto;
+}
+
+.ambient-widget-size--h-full {
+  height: 100%;
+}
+
+.ambient-widget-size--h-half {
+  height: 50%;
+}
+
+/* --- Grid span tokens --- */
+
+.ambient-widget-size--span-2 {
+  width: 100%;
+}
+
+.ambient-widget-size--span-3 {
+  width: 100%;
+}
+
+.ambient-widget-size--span-4 {
+  width: 100%;
+}
+
+/* --- Center: single or few widgets centered on screen --- */
+
+.ambient-layout--center {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  align-items: center;
+}
+
+.ambient-layout--center > .ambient-widget + .ambient-widget {
+  margin-top: 2rem;
+  margin-top: var(--layout-gap, 2rem);
+}
+
+/* --- Stack: vertical column of widgets --- */
+
+.ambient-layout--stack {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  align-items: center;
+  -webkit-box-pack: start;
+  -webkit-justify-content: flex-start;
+  justify-content: flex-start;
+}
+
+.ambient-layout--stack > .ambient-widget {
+  width: 100%;
+}
+
+.ambient-layout--stack > .ambient-widget + .ambient-widget {
+  margin-top: 2rem;
+  margin-top: var(--layout-gap, 2rem);
+}
+
+/* --- Grid: responsive column grid (flex fallback for older Safari) --- */
+
+.ambient-layout--grid {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-wrap: wrap;
+  flex-wrap: wrap;
+  -webkit-box-align: start;
+  -webkit-align-items: flex-start;
+  align-items: flex-start;
+  -webkit-align-content: flex-start;
+  align-content: flex-start;
+}
+
+.ambient-layout--grid > .ambient-widget {
+  width: 50%;
+  padding: 1rem;
+  padding: calc(var(--layout-gap, 2rem) / 2);
+  box-sizing: border-box;
+}
+
+.ambient-layout--grid[data-columns="1"] > .ambient-widget {
+  width: 100%;
+}
+
+.ambient-layout--grid[data-columns="3"] > .ambient-widget {
+  width: 33.333%;
+}
+
+.ambient-layout--grid[data-columns="4"] > .ambient-widget {
+  width: 25%;
+}
+
+.ambient-layout--grid > .ambient-widget-size--w-full,
+.ambient-layout--grid > .ambient-widget-size--span-2 {
+  width: 100%;
+}
+
+.ambient-layout--grid > .ambient-widget-size--span-3 {
+  width: 100%;
+}
+
+.ambient-layout--grid > .ambient-widget-size--span-4 {
+  width: 100%;
+}
+
+/* --- Fullscreen: widgets expand to fill the viewport --- */
+
+.ambient-layout--fullscreen {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+}
+
+.ambient-layout--fullscreen > .ambient-widget {
+  -webkit-box-flex: 1;
+  -webkit-flex: 1 1 auto;
+  flex: 1 1 auto;
+  width: 100%;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  align-items: center;
+}
+
+/* --- Top-bottom: primary widget top, secondary widget bottom --- */
+
+.ambient-layout--top-bottom {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+  justify-content: space-between;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  align-items: center;
+}
+
+.ambient-layout--top-bottom > .ambient-widget-size--w-auto {
+  width: auto;
+  max-width: 100%;
+}
+
+.ambient-layout--top-bottom > .ambient-widget-size--w-full {
+  width: 100%;
+}
+
+.ambient-layout--top-bottom > .ambient-widget:first-child {
+  -webkit-align-self: center;
+  align-self: center;
+}
+
+.ambient-layout--top-bottom > .ambient-widget:last-child {
+  -webkit-align-self: center;
+  align-self: center;
+}
+
+.ambient-layout--top-bottom > .ambient-widget:only-child {
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+  flex: 1;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  align-items: center;
+}

@@ -1,0 +1,91 @@
+/**
+ * themes.css — Theme tokens for Ambient Display
+ *
+ * Each theme is a CSS class on <html> (e.g. theme-dark). The theme engine
+ * toggles these classes from config.json — no HTML changes required.
+ */
+
+/* --- Dark — deep slate, default ambient look --- */
+
+html.theme-dark body {
+  background-color: #0f172a;
+  color: #f8fafc;
+}
+
+html.theme-dark .ambient-widget--unknown {
+  color: #fca5a5;
+}
+
+html.theme-dark .ambient-error {
+  color: #fca5a5;
+}
+
+/* --- Light — bright daytime display --- */
+
+html.theme-light body {
+  background-color: #f1f5f9;
+  color: #0f172a;
+}
+
+html.theme-light .ambient-widget--unknown {
+  color: #dc2626;
+}
+
+html.theme-light .ambient-error {
+  color: #dc2626;
+}
+
+/* --- Midnight — near-black with cool blue undertones --- */
+
+html.theme-midnight body {
+  background-color: #050810;
+  color: #cbd5e1;
+}
+
+html.theme-midnight .clock-widget__time {
+  color: #e2e8f0;
+  font-weight: 200;
+}
+
+html.theme-midnight .clock-widget__date {
+  color: #64748b;
+  opacity: 1;
+}
+
+html.theme-midnight .ambient-widget--unknown {
+  color: #f87171;
+}
+
+html.theme-midnight .ambient-error {
+  color: #f87171;
+}
+
+/* --- Minimal — high-contrast monochrome --- */
+
+html.theme-minimal body {
+  background-color: #000000;
+  color: #ffffff;
+}
+
+html.theme-minimal .clock-widget__time {
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+html.theme-minimal .clock-widget__date {
+  font-weight: 300;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.55;
+}
+
+html.theme-minimal .ambient-widget--unknown {
+  color: #ffffff;
+  opacity: 0.6;
+}
+
+html.theme-minimal .ambient-error {
+  color: #ffffff;
+  opacity: 0.8;
+}

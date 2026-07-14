@@ -1,0 +1,69 @@
+/**
+ * app.css — Global styles for Ambient Display
+ *
+ * Provides the base layout shell and utility classes. Theme color tokens
+ * live in css/themes.css and are toggled by js/theme-engine.js.
+ */
+
+/* --- Reset & base layout --- */
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  -webkit-text-size-adjust: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+  background-color: #0f172a;
+  color: #f8fafc;
+  -webkit-transition: background-color 0.3s ease, color 0.3s ease;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* --- Root container --- */
+
+.ambient-root {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.ambient-widget--unknown {
+  text-align: center;
+  font-size: 1rem;
+}
+
+/* --- Error & fallback states --- */
+
+.ambient-error {
+  width: 100%;
+  height: 100%;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  align-items: center;
+  padding: 2rem;
+  text-align: center;
+}
+
+.ambient-noscript {
+  padding: 2rem;
+  text-align: center;
+  font-size: 1.25rem;
+}
