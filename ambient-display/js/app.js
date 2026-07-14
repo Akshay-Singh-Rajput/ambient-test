@@ -9,7 +9,7 @@
   var REFRESH_MS = 60000;
 
   function isPreviewMode() {
-    return window.location.search.indexOf('preview=1') !== -1;
+    return AmbientDisplay.previewMode && AmbientDisplay.previewMode.isAdminPreview();
   }
 
   function renderFrame() {

@@ -11,6 +11,7 @@
     "./config/config.json",
     "./js/config-loader.js",
     "./js/day-phase.js",
+    "./js/preview-mode.js",
     "./js/night-clock.js",
     "./js/presentation-rules.js",
     "./js/display-modes.js",
