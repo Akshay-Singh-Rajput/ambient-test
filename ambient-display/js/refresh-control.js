@@ -1,35 +1,15 @@
 /**
- * refresh-control.js — Status time and manual refresh for Ambient Display
- *
- * Shows device time with seconds and a refresh control on the kiosk UI.
+ * refresh-control.js — Tiny manual refresh control for kiosk display (ES5)
  */
 
 (function () {
-  var TICK_MS = 1000;
-  var statusEl = null;
-  var tickTimer = null;
-
-  function pad(value) {
-    return value < 10 ? '0' + value : String(value);
-  }
-
-  function formatStatusTime(date) {
-    return pad(date.getHours()) + ':' + pad(date.getMinutes()) + ':' + pad(date.getSeconds());
-  }
-
-  function tickStatusTime() {
-    if (statusEl) {
-      statusEl.textContent = formatStatusTime(new Date());
-    }
-  }
-
   function createRefreshIcon() {
     var svg;
     var path;
 
     if (document.createElementNS) {
       svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-      svg.setAttribute('class', 'ambient-controls__icon');
+      svg.setAttribute('class', 'ambient-refresh__icon');
       svg.setAttribute('viewBox', '0 0 24 24');
       svg.setAttribute('aria-hidden', 'true');
       svg.setAttribute('focusable', 'false');
@@ -45,60 +25,39 @@
     }
 
     svg = document.createElement('span');
-    svg.className = 'ambient-controls__icon ambient-controls__icon--fallback';
+    svg.className = 'ambient-refresh__icon ambient-refresh__icon--fallback';
     svg.setAttribute('aria-hidden', 'true');
     svg.textContent = '\u21BB';
     return svg;
   }
 
-  function buildControls() {
-    var bar;
-    var refreshBtn;
+  function mount() {
+    var root = document.getElementById('ambient-root');
+    var btn;
 
-    if (document.querySelector('.ambient-controls')) {
+    if (!root) {
       return;
     }
 
-    bar = document.createElement('div');
-    bar.className = 'ambient-controls';
-    bar.setAttribute('role', 'toolbar');
-    bar.setAttribute('aria-label', 'Display controls');
+    if (root.querySelector('.ambient-refresh')) {
+      return;
+    }
 
-    statusEl = document.createElement('time');
-    statusEl.className = 'ambient-controls__clock';
-    statusEl.setAttribute('datetime', new Date().toISOString());
-    tickStatusTime();
+    btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'ambient-refresh';
+    btn.setAttribute('aria-label', 'Refresh display');
+    btn.setAttribute('title', 'Refresh display');
+    btn.appendChild(createRefreshIcon());
 
-    refreshBtn = document.createElement('button');
-    refreshBtn.type = 'button';
-    refreshBtn.className = 'ambient-controls__refresh';
-    refreshBtn.setAttribute('aria-label', 'Refresh display');
-    refreshBtn.setAttribute('title', 'Refresh display');
-    refreshBtn.appendChild(createRefreshIcon());
-
-    refreshBtn.addEventListener('click', function () {
+    btn.addEventListener('click', function () {
       window.location.reload();
-    });
+    }, false);
 
-    bar.appendChild(statusEl);
-    bar.appendChild(refreshBtn);
-    document.body.appendChild(bar);
-
-    tickTimer = window.setInterval(tickStatusTime, TICK_MS);
+    root.appendChild(btn);
   }
 
-  function init() {
-    if (document.readyState === 'loading') {
-      if (document.addEventListener) {
-        document.addEventListener('DOMContentLoaded', buildControls, false);
-      } else {
-        window.onload = buildControls;
-      }
-      return;
-    }
-
-    buildControls();
-  }
-
-  init();
+  window.AmbientRefreshControl = {
+    mount: mount
+  };
 }());

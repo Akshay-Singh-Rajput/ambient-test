@@ -99,7 +99,10 @@ AmbientDisplay.configLoader = (function () {
           : 30,
         contentRefreshMs: config.settings && config.settings.contentRefreshMs
           ? config.settings.contentRefreshMs
-          : 60000
+          : 60000,
+        nightClockRefreshMs: config.settings && config.settings.nightClockRefreshMs
+          ? config.settings.nightClockRefreshMs
+          : 300000
       },
       theme: {
         autoPhase: config.theme ? config.theme.autoPhase !== false : true
@@ -113,6 +116,99 @@ AmbientDisplay.configLoader = (function () {
         orientation: config.display && config.display.orientation
           ? String(config.display.orientation)
           : 'landscape'
+      },
+      displayModes: {
+        enabled: config.displayModes ? config.displayModes.enabled !== false : true,
+        focusPriorityThreshold: config.displayModes && config.displayModes.focusPriorityThreshold
+          ? config.displayModes.focusPriorityThreshold
+          : 80,
+        sleepPhases: config.displayModes && isArray(config.displayModes.sleepPhases)
+          ? config.displayModes.sleepPhases
+          : ['prepare', 'bedside'],
+        celebrationTypes: config.displayModes && isArray(config.displayModes.celebrationTypes)
+          ? config.displayModes.celebrationTypes
+          : ['birthday', 'anniversary', 'festival']
+      },
+      intentPhases: {
+        enabled: config.intentPhases ? config.intentPhases.enabled !== false : true,
+        prepare: {
+          startTime: config.intentPhases && config.intentPhases.prepare && config.intentPhases.prepare.startTime
+            ? config.intentPhases.prepare.startTime
+            : (config.nightClock && config.nightClock.prepareStartTime) || '21:00',
+          endTime: config.intentPhases && config.intentPhases.prepare && config.intentPhases.prepare.endTime
+            ? config.intentPhases.prepare.endTime
+            : (config.nightClock && config.nightClock.prepareEndTime) || '00:00'
+        },
+        bedside: {
+          startTime: config.intentPhases && config.intentPhases.bedside && config.intentPhases.bedside.startTime
+            ? config.intentPhases.bedside.startTime
+            : (config.nightClock && config.nightClock.startTime) || '00:00',
+          endTime: config.intentPhases && config.intentPhases.bedside && config.intentPhases.bedside.endTime
+            ? config.intentPhases.bedside.endTime
+            : (config.nightClock && config.nightClock.endTime) || '06:00'
+        },
+        earlyMorningCutoff: config.intentPhases && config.intentPhases.earlyMorningCutoff
+          ? config.intentPhases.earlyMorningCutoff
+          : '08:00',
+        tomorrowPriorityThreshold: config.intentPhases && config.intentPhases.tomorrowPriorityThreshold
+          ? config.intentPhases.tomorrowPriorityThreshold
+          : 60,
+        bedsideReminderThreshold: config.intentPhases && config.intentPhases.bedsideReminderThreshold
+          ? config.intentPhases.bedsideReminderThreshold
+          : 80,
+        wakeTransitionStart: config.intentPhases && config.intentPhases.wakeTransitionStart
+          ? config.intentPhases.wakeTransitionStart
+          : (config.nightClock && config.nightClock.wakeTransitionStart) || '05:30',
+        wakeTransitionEnd: config.intentPhases && config.intentPhases.wakeTransitionEnd
+          ? config.intentPhases.wakeTransitionEnd
+          : (config.nightClock && config.nightClock.wakeTransitionEnd) || '06:30',
+        background: config.intentPhases && config.intentPhases.background
+          ? String(config.intentPhases.background)
+          : (config.nightClock && config.nightClock.background) || 'dark-gradient',
+        personalMessage: config.intentPhases && config.intentPhases.personalMessage
+          ? String(config.intentPhases.personalMessage)
+          : (config.nightClock && config.nightClock.personalMessage) || null,
+        prepareMessage: config.intentPhases && config.intentPhases.prepareMessage
+          ? String(config.intentPhases.prepareMessage)
+          : null,
+        pauseAmbientRotation: config.intentPhases
+          ? config.intentPhases.pauseAmbientRotation !== false
+          : config.nightClock ? config.nightClock.pauseAmbientRotation !== false : true,
+        pausePhotoRotation: config.intentPhases
+          ? config.intentPhases.pausePhotoRotation !== false
+          : config.nightClock ? config.nightClock.pausePhotoRotation !== false : true,
+        pauseQuoteRotation: config.intentPhases
+          ? config.intentPhases.pauseQuoteRotation !== false
+          : config.nightClock ? config.nightClock.pauseQuoteRotation !== false : true,
+        reduceAnimations: config.intentPhases
+          ? config.intentPhases.reduceAnimations !== false
+          : config.nightClock ? config.nightClock.reduceAnimations !== false : true
+      },
+      nightClock: {
+        enabled: config.nightClock ? config.nightClock.enabled !== false : true,
+        startTime: config.nightClock && config.nightClock.startTime ? config.nightClock.startTime : '23:00',
+        endTime: config.nightClock && config.nightClock.endTime ? config.nightClock.endTime : '06:00',
+        wakeTransitionStart: config.nightClock && config.nightClock.wakeTransitionStart
+          ? config.nightClock.wakeTransitionStart
+          : '05:30',
+        wakeTransitionEnd: config.nightClock && config.nightClock.wakeTransitionEnd
+          ? config.nightClock.wakeTransitionEnd
+          : '06:30',
+        clockScale: config.nightClock && config.nightClock.clockScale ? config.nightClock.clockScale : 0.7,
+        showSeconds: config.nightClock ? config.nightClock.showSeconds !== false : true,
+        showGreeting: config.nightClock ? config.nightClock.showGreeting !== false : true,
+        showDate: config.nightClock ? config.nightClock.showDate !== false : true,
+        showPersonalMessage: config.nightClock ? config.nightClock.showPersonalMessage !== false : true,
+        background: config.nightClock && config.nightClock.background
+          ? String(config.nightClock.background)
+          : 'dark-gradient',
+        personalMessage: config.nightClock && config.nightClock.personalMessage
+          ? String(config.nightClock.personalMessage)
+          : null,
+        pauseAmbientRotation: config.nightClock ? config.nightClock.pauseAmbientRotation !== false : true,
+        pausePhotoRotation: config.nightClock ? config.nightClock.pausePhotoRotation !== false : true,
+        pauseQuoteRotation: config.nightClock ? config.nightClock.pauseQuoteRotation !== false : true,
+        reduceAnimations: config.nightClock ? config.nightClock.reduceAnimations !== false : true
       },
       weather: config.weather || {},
       agenda: {

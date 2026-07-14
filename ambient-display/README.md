@@ -17,14 +17,28 @@ config.json
     ↓
 Content Providers (data + business rules)
     ↓
-Presentation Engine (collect + sort)
+Presentation Engine (collect + select display mode)
     ↓
-Presentation Rules (assign regions)
+Presentation Rules (layout per mode)
     ↓
 Display Renderer (render DOM)
 ```
 
 Permanent shell (greeting, clock, date) lives outside providers.
+
+## Display modes
+
+| Mode | When |
+|---|---|
+| **Celebration** | Birthday, anniversary, festival |
+| **Focus** | Important content (priority ≥ 80) |
+| **Night Reminder** | Night + critical content (appointment, flight, etc.) |
+| **Night Clock** | Night + nothing critical — premium bedside clock |
+| **Quiet** | Wake-up transition (05:30–06:30) |
+| **Calm** | No important or moderate content |
+| **Standard** | Default daytime layout |
+
+Configure via `displayModes` and `nightClock` in `config.json`.
 
 ## Providers
 
@@ -41,7 +55,7 @@ Permanent shell (greeting, clock, date) lives outside providers.
 
 ## Config sections
 
-`user`, `shell`, `settings`, `theme`, `weather`, `agenda`, `photos`, `quotes`, `notes`, `calendar`, `personalMessages`
+`user`, `shell`, `settings`, `theme`, `display`, `displayModes`, `nightClock`, `weather`, `agenda`, `photos`, `quotes`, `notes`, `calendar`, `personalMessages`
 
 ## Target device
 

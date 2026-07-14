@@ -1,5 +1,5 @@
 {
-  "version": "3.1.0",
+  "version": "3.2.0",
   "user": {
     "name": "Akshay"
   },
@@ -11,7 +11,8 @@
   "settings": {
     "ambientRotationMs": 45000,
     "photoRotationMinutes": 30,
-    "contentRefreshMs": 60000
+    "contentRefreshMs": 60000,
+    "nightClockRefreshMs": 300000
   },
   "theme": {
     "autoPhase": true
@@ -21,6 +22,53 @@
     "width": 1024,
     "height": 768,
     "orientation": "landscape"
+  },
+  "displayModes": {
+    "enabled": true,
+    "focusPriorityThreshold": 80,
+    "sleepPhases": ["prepare", "bedside"],
+    "celebrationTypes": ["birthday", "anniversary", "festival"]
+  },
+  "intentPhases": {
+    "enabled": true,
+    "prepare": {
+      "startTime": "21:00",
+      "endTime": "00:00"
+    },
+    "bedside": {
+      "startTime": "00:00",
+      "endTime": "06:00"
+    },
+    "earlyMorningCutoff": "08:00",
+    "tomorrowPriorityThreshold": 60,
+    "bedsideReminderThreshold": 80,
+    "wakeTransitionStart": "05:30",
+    "wakeTransitionEnd": "06:30",
+    "background": "dark-gradient",
+    "prepareMessage": "Plan for tomorrow, then rest well \u2764\uFE0F",
+    "personalMessage": "Sleep well \u2764\uFE0F",
+    "pauseAmbientRotation": true,
+    "pausePhotoRotation": true,
+    "pauseQuoteRotation": true,
+    "reduceAnimations": true
+  },
+  "nightClock": {
+    "enabled": true,
+    "startTime": "00:00",
+    "endTime": "06:00",
+    "wakeTransitionStart": "05:30",
+    "wakeTransitionEnd": "06:30",
+    "clockScale": 0.70,
+    "showSeconds": true,
+    "showGreeting": true,
+    "showDate": true,
+    "showPersonalMessage": true,
+    "background": "dark-gradient",
+    "personalMessage": "Sleep well \u2764\uFE0F",
+    "pauseAmbientRotation": true,
+    "pausePhotoRotation": true,
+    "pauseQuoteRotation": true,
+    "reduceAnimations": true
   },
   "weather": {
     "location": "Mumbai",
@@ -58,6 +106,18 @@
         "type": "reminder",
         "title": "Pick up anniversary gift",
         "date": "tomorrow"
+      },
+      {
+        "type": "flight",
+        "title": "Flight to Delhi",
+        "date": "tomorrow",
+        "time": "05:30"
+      },
+      {
+        "type": "appointment",
+        "title": "Dentist",
+        "date": "tomorrow",
+        "time": "07:00"
       }
     ]
   },

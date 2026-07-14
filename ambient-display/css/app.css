@@ -104,28 +104,9 @@ body.phase-night {
   min-height: 0;
 }
 
-/* --- Shell (Header) --- */
+/* --- Shell (Header) — day layout grid in night-clock.css --- */
 
 .ambient-shell {
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: flex;
-  -webkit-box-pack: justify;
-  -webkit-justify-content: space-between;
-  justify-content: space-between;
-  -webkit-box-align: end;
-  -webkit-align-items: flex-end;
-  align-items: flex-end;
-  -webkit-flex-shrink: 0;
-  flex-shrink: 0;
-}
-
-.ambient-shell__info {
-  text-align: left;
-}
-
-.ambient-shell__clock {
-  text-align: right;
   -webkit-flex-shrink: 0;
   flex-shrink: 0;
 }
@@ -514,26 +495,60 @@ body.phase-night {
   to { opacity: 1; }
 }
 
-/* --- Special day modes --- */
+/* --- Special emphasis (legacy aliases removed — see display-modes.css) --- */
 
-.ambient-mode-celebratory .ambient-block--agenda.ambient-block--hero,
-.ambient-mode-celebratory .ambient-block--hero-message {
-  background: rgba(255, 200, 120, 0.15);
-  border-radius: 1.5rem;
-  padding: 1.5rem;
+/* --- Refresh control --- */
+
+.ambient-root {
+  position: relative;
 }
 
-.ambient-mode-warning .ambient-block--agenda.ambient-block--hero {
-  background: rgba(255, 59, 48, 0.08);
-  border: 1px solid rgba(255, 59, 48, 0.2);
+.ambient-refresh {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  z-index: 20;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  margin: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(127, 127, 127, 0.18);
+  color: inherit;
+  opacity: 0.42;
+  cursor: pointer;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  justify-content: center;
+  -webkit-transition: opacity 0.2s ease, background 0.2s ease;
+  transition: opacity 0.2s ease, background 0.2s ease;
 }
 
-.ambient-mode-warning .ambient-block--hero .ambient-block__title {
-  color: #d70015;
+.ambient-refresh:active {
+  opacity: 0.75;
+  background: rgba(127, 127, 127, 0.28);
 }
 
-.phase-night .ambient-mode-warning .ambient-block--hero .ambient-block__title {
-  color: #ff6b6b;
+.ambient-refresh__icon {
+  width: 14px;
+  height: 14px;
+  display: block;
+}
+
+.ambient-refresh__icon--fallback {
+  font-size: 14px;
+  line-height: 1;
+}
+
+.phase-night .ambient-refresh {
+  background: rgba(255, 255, 255, 0.12);
 }
 
 /* --- Responsive --- */

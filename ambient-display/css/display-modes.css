@@ -1,0 +1,106 @@
+/**
+ * css/display-modes.css — Layout and motion per display mode (ES5 / old Safari)
+ */
+
+/* --- Focus: important content front and center --- */
+
+.ambient-display-focus .ambient-hero {
+  -webkit-box-flex: 1;
+  flex: 1;
+}
+
+/* --- Standard: balanced default layout --- */
+
+.ambient-display-standard .ambient-hero {
+  -webkit-box-flex: 1;
+  flex: 1;
+}
+
+/* --- Calm: large clock, large photo, minimal context --- */
+
+.ambient-display-calm .ambient-shell--large-clock .ambient-shell__time {
+  font-size: 72px;
+}
+
+.ambient-display-calm .ambient-shell--large-clock .ambient-shell__time-ampm {
+  font-size: 28px;
+}
+
+.ambient-display-calm .ambient-hero {
+  max-height: 380px;
+}
+
+.ambient-display-calm .ambient-block--hero-photo {
+  max-width: 560px;
+}
+
+.ambient-display-calm .ambient-context {
+  max-height: 96px;
+}
+
+.ambient-display-calm .ambient-ambient {
+  max-height: 64px;
+}
+
+/* --- Celebration: warm, personal, festive --- */
+
+.ambient-display-celebration {
+  background: transparent;
+}
+
+html.phase-morning .ambient-display-celebration,
+html.phase-afternoon .ambient-display-celebration,
+html.phase-evening .ambient-display-celebration,
+html.phase-night .ambient-display-celebration {
+  /* emphasis handled by parent phase + celebration blocks */
+}
+
+.ambient-emphasis-celebratory .ambient-block--hero,
+.ambient-emphasis-celebratory .ambient-block--hero-message {
+  background: rgba(255, 200, 120, 0.18);
+  border-radius: 1.5rem;
+  padding: 1.25rem 1.5rem;
+}
+
+.ambient-display-celebration .ambient-block--hero .ambient-block__title,
+.ambient-display-celebration .ambient-message__text {
+  color: #c45c00;
+}
+
+.phase-night .ambient-display-celebration .ambient-block--hero .ambient-block__title,
+.phase-night .ambient-display-celebration .ambient-message__text {
+  color: #ffb366;
+}
+
+.ambient-emphasis-warning .ambient-block--agenda.ambient-block--hero {
+  background: rgba(255, 59, 48, 0.08);
+  border: 1px solid rgba(255, 59, 48, 0.2);
+}
+
+.ambient-emphasis-warning .ambient-block--hero .ambient-block__title {
+  color: #d70015;
+}
+
+.phase-night .ambient-emphasis-warning .ambient-block--hero .ambient-block__title {
+  color: #ff6b6b;
+}
+
+/* --- Reduced motion (sleep mode) --- */
+
+.ambient-reduce-motion .ambient-animate-fade,
+.ambient-reduce-motion .ambient-shell__greeting--fade {
+  -webkit-animation: none;
+  animation: none;
+}
+
+.ambient-reduce-motion .ambient-photo__img--incoming {
+  -webkit-animation: none;
+  animation: none;
+  opacity: 1;
+}
+
+/* --- iPad mini tuning --- */
+
+html.ambient-ipad-mini .ambient-display-calm .ambient-shell--large-clock .ambient-shell__time {
+  font-size: 64px;
+}

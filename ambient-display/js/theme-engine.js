@@ -56,7 +56,7 @@ AmbientDisplay.themeEngine = (function () {
   }
 
   function update(now) {
-    var phase = AmbientDisplay.dayPhase.getCurrentPhase(now || new Date());
+    var phase = AmbientDisplay.dayPhase.getThemePhase(now || new Date(), AmbientDisplay.configLoader.getConfig());
     return applyPhase(phase);
   }
 

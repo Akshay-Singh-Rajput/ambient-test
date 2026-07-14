@@ -17,6 +17,9 @@ AmbientDisplay.displayRenderer = (function () {
   var lastHeroKey = '';
   var lastContextKey = '';
   var lastPhotoSrc = '';
+  var lastDisplayMode = '';
+  var cornerEl = null;
+  var lastCornerKey = '';
 
   function escapeHtml(text) {
     return String(text)
@@ -186,12 +189,139 @@ AmbientDisplay.displayRenderer = (function () {
     }
   }
 
-  function applyMode(mode) {
+  function renderTomorrowSummary(summary) {
+    var payload;
+    var html = '';
+
+    if (!cornerEl) {
+      return;
+    }
+
+    if (!summary || !summary.payload) {
+      cornerEl.innerHTML = '';
+      cornerEl.className = 'ambient-corner';
+      return;
+    }
+
+    payload = summary.payload;
+    html += '<div class="ambient-corner-card ambient-corner-card--tomorrow ambient-animate-instant">';
+    html += '<p class="ambient-corner-card__label">Tomorrow</p>';
+    html += '<p class="ambient-corner-card__title">' + escapeHtml(payload.title) + '</p>';
+    if (payload.time) {
+      html += '<p class="ambient-corner-card__meta">' + escapeHtml(payload.time) + '</p>';
+    }
+    html += '</div>';
+
+    cornerEl.innerHTML = html;
+    cornerEl.className = 'ambient-corner ambient-corner--filled';
+  }
+
+  function renderBedsideReminders(reminders) {
+    var html = '';
+    var i;
+    var item;
+    var payload;
+    var emoji;
+    var line;
+
+    if (!cornerEl) {
+      return;
+    }
+
+    if (!reminders || !reminders.length) {
+      cornerEl.innerHTML = '';
+      cornerEl.className = 'ambient-corner';
+      return;
+    }
+
+    html += '<div class="ambient-corner-list ambient-animate-instant">';
+    for (i = 0; i < reminders.length; i++) {
+      item = reminders[i];
+      payload = item.payload || {};
+      emoji = AmbientDisplay.nightClock.kindEmoji(payload.kind, payload.title);
+      line = payload.title;
+      if (payload.time) {
+        line += ' ' + payload.time;
+      }
+      html += '<p class="ambient-corner-list__item">';
+      html += '<span class="ambient-corner-list__emoji">' + emoji + '</span> ';
+      html += escapeHtml(line);
+      html += '</p>';
+    }
+    html += '</div>';
+
+    cornerEl.innerHTML = html;
+    cornerEl.className = 'ambient-corner ambient-corner--filled';
+  }
+
+  function renderCorner(screen) {
+    var key = '';
+
+    if (screen.displayMode === 'prepare') {
+      key = 'prepare:' + itemKey(screen.tomorrowSummary);
+      if (key === lastCornerKey) {
+        return;
+      }
+      lastCornerKey = key;
+      renderTomorrowSummary(screen.tomorrowSummary);
+      return;
+    }
+
+    if (screen.displayMode === 'bedside') {
+      key = 'bedside:' + JSON.stringify(screen.bedsideReminders || []);
+      if (key === lastCornerKey) {
+        return;
+      }
+      lastCornerKey = key;
+      renderBedsideReminders(screen.bedsideReminders || []);
+      return;
+    }
+
+    lastCornerKey = '';
+    renderTomorrowSummary(null);
+  }
+
+  function applyDisplayMode(screen) {
     var root = document.querySelector('.ambient-app');
+    var modeId = screen.displayMode || 'standard';
+    var flags = screen.flags || {};
+    var emphasis = screen.emphasis || 'normal';
+    var cfg = AmbientDisplay.configLoader ? AmbientDisplay.configLoader.getConfig() : null;
+    var wakeProgress = screen.wakeProgress;
+
     if (!root) {
       return;
     }
-    root.className = 'ambient-app ambient-mode-' + (mode || 'normal');
+
+    root.className = 'ambient-app ambient-display-' + modeId + ' ambient-emphasis-' + emphasis;
+
+    if (flags.reduceAnimations) {
+      root.className += ' ambient-reduce-motion';
+    }
+
+    if (modeId === 'prepare' || modeId === 'bedside') {
+      AmbientDisplay.nightClock.applyBackground(cfg);
+    } else {
+      AmbientDisplay.nightClock.clearBackground();
+    }
+
+    if (wakeProgress >= 0 && wakeProgress < 1) {
+      root.className += ' ambient-wake-transition';
+      root.setAttribute('data-wake-progress', String(Math.round(wakeProgress * 100)));
+    } else {
+      root.removeAttribute('data-wake-progress');
+    }
+
+    if (AmbientDisplay.shell && AmbientDisplay.shell.applyLayout) {
+      AmbientDisplay.shell.applyLayout(screen);
+    }
+
+    if (modeId !== lastDisplayMode) {
+      lastHeroKey = '';
+      lastContextKey = '';
+      lastCornerKey = '';
+      lastDisplayMode = modeId;
+    }
   }
 
   function renderHero(hero) {
@@ -288,7 +418,11 @@ AmbientDisplay.displayRenderer = (function () {
     ambientEl.className = 'ambient-ambient ambient-ambient--filled';
   }
 
-  function startAmbientRotation(items) {
+  function startAmbientRotation(items, flags) {
+    var rotationMs = ambientInterval;
+    var filtered = [];
+    var i;
+
     ambientItems = items || [];
     ambientIndex = 0;
 
@@ -297,13 +431,42 @@ AmbientDisplay.displayRenderer = (function () {
       ambientTimer = null;
     }
 
+    if (flags && flags.pauseAmbientRotation) {
+      ambientItems = [];
+      renderAmbientSlot();
+      return;
+    }
+
+    if (flags && flags.hideAmbient) {
+      ambientItems = [];
+      renderAmbientSlot();
+      return;
+    }
+
+    if (flags && flags.pausePhotoRotation) {
+      for (i = 0; i < ambientItems.length; i++) {
+        if (ambientItems[i].id !== 'photo') {
+          filtered.push(ambientItems[i]);
+        }
+      }
+      ambientItems = filtered;
+    }
+
+    if (flags && flags.ambientRotationMs) {
+      rotationMs = flags.ambientRotationMs;
+    }
+
+    if (flags && flags.reduceAnimations) {
+      rotationMs = rotationMs * 2;
+    }
+
     renderAmbientSlot();
 
     if (ambientItems.length > 1) {
       ambientTimer = window.setInterval(function () {
         ambientIndex += 1;
         renderAmbientSlot();
-      }, ambientInterval);
+      }, rotationMs);
     }
   }
 
@@ -311,6 +474,10 @@ AmbientDisplay.displayRenderer = (function () {
     if (settings && settings.ambientRotationMs) {
       ambientInterval = settings.ambientRotationMs;
     }
+
+    cornerEl = document.createElement('aside');
+    cornerEl.className = 'ambient-corner';
+    cornerEl.setAttribute('aria-label', 'At a glance');
 
     stageEl = document.createElement('main');
     stageEl.className = 'ambient-stage';
@@ -331,14 +498,30 @@ AmbientDisplay.displayRenderer = (function () {
     stageEl.appendChild(heroEl);
     stageEl.appendChild(contextEl);
     stageEl.appendChild(ambientEl);
+    container.appendChild(cornerEl);
     container.appendChild(stageEl);
   }
 
   function render(screen) {
-    applyMode(screen.mode || 'normal');
+    var flags = screen.flags || {};
+
+    applyDisplayMode(screen);
+    renderCorner(screen);
+
+    if (screen.displayMode === 'prepare' || screen.displayMode === 'bedside') {
+      if (stageEl) {
+        stageEl.style.display = 'none';
+      }
+      return;
+    }
+
+    if (stageEl) {
+      stageEl.style.display = flags.hideStage ? 'none' : '';
+    }
+
     renderHero(screen.hero);
     renderContext(screen.context || []);
-    startAmbientRotation(screen.ambient || []);
+    startAmbientRotation(screen.ambient || [], flags);
   }
 
   function destroy() {
@@ -349,7 +532,11 @@ AmbientDisplay.displayRenderer = (function () {
     if (stageEl && stageEl.parentNode) {
       stageEl.parentNode.removeChild(stageEl);
     }
+    if (cornerEl && cornerEl.parentNode) {
+      cornerEl.parentNode.removeChild(cornerEl);
+    }
     stageEl = null;
+    cornerEl = null;
     heroEl = null;
     contextEl = null;
     ambientEl = null;
@@ -357,6 +544,8 @@ AmbientDisplay.displayRenderer = (function () {
     lastHeroKey = '';
     lastContextKey = '';
     lastPhotoSrc = '';
+    lastDisplayMode = '';
+    lastCornerKey = '';
   }
 
   return {

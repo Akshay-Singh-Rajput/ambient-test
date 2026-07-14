@@ -65,6 +65,12 @@ AmbientDisplay.providerUtils = (function () {
     if (phase === 'evening') {
       return 'Good Evening';
     }
+    if (phase === 'prepare') {
+      return 'Good Evening';
+    }
+    if (phase === 'bedside') {
+      return 'Good Night';
+    }
     return 'Good Night';
   }
 
@@ -75,7 +81,10 @@ AmbientDisplay.providerUtils = (function () {
     if (phase === 'evening') {
       return ' \uD83C\uDF07';
     }
-    if (phase === 'night') {
+    if (phase === 'prepare') {
+      return ' \uD83C\uDF19';
+    }
+    if (phase === 'bedside') {
       return ' \uD83C\uDF19';
     }
     return '';

@@ -27,6 +27,9 @@
     }
 
     if (scope === 'morning' || scope === 'afternoon' || scope === 'evening' || scope === 'night') {
+      if (scope === 'night' && (phase === 'prepare' || phase === 'bedside')) {
+        return true;
+      }
       return scope === phase;
     }
 
@@ -65,7 +68,7 @@
 
   function build(config, now) {
     var messages = config && config.personalMessages ? config.personalMessages : [];
-    var phase = AmbientDisplay.dayPhase.getCurrentPhase(now);
+    var phase = AmbientDisplay.dayPhase.getCurrentPhase(now, config);
     var selected = selectMessage(messages, phase, now);
     var scope;
     var priority;

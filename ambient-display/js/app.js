@@ -13,15 +13,21 @@
   }
 
   function renderFrame() {
+    var config = AmbientDisplay.configLoader.getConfig();
+    var settings = config.settings || {};
     var screen = AmbientDisplay.presentationEngine.buildScreen(new Date());
-    AmbientDisplay.displayRenderer.render(screen);
-  }
+    var refreshMs = settings.contentRefreshMs || REFRESH_MS;
 
-  function startRefreshLoop() {
+    AmbientDisplay.displayRenderer.render(screen);
+
+    if (screen.minimalRefresh) {
+      refreshMs = settings.nightClockRefreshMs || 300000;
+    }
+
     if (refreshTimer) {
       window.clearInterval(refreshTimer);
     }
-    refreshTimer = window.setInterval(renderFrame, REFRESH_MS);
+    refreshTimer = window.setInterval(renderFrame, refreshMs);
   }
 
   function teardown() {
@@ -52,7 +58,6 @@
   function bootstrapWithConfig(config) {
     var root = document.getElementById(ROOT_ID);
     var settings = config.settings || {};
-    var refreshMs = settings.contentRefreshMs || REFRESH_MS;
 
     if (!root) {
       return;
@@ -65,7 +70,7 @@
     applyDisplayProfile(config);
 
     var app = document.createElement('div');
-    app.className = 'ambient-app ambient-mode-normal';
+    app.className = 'ambient-app ambient-display-standard';
     root.appendChild(app);
 
     AmbientDisplay.providerRegistry.initializeAll(config);
@@ -74,10 +79,9 @@
     AmbientDisplay.displayRenderer.mount(app, settings);
     renderFrame();
 
-    if (refreshTimer) {
-      window.clearInterval(refreshTimer);
+    if (window.AmbientRefreshControl && window.AmbientRefreshControl.mount) {
+      window.AmbientRefreshControl.mount();
     }
-    refreshTimer = window.setInterval(renderFrame, refreshMs);
   }
 
   function bindPreviewChannel() {

@@ -1,6 +1,5 @@
 /**
- * shell.js — Permanent header: greeting, time, date (ES5)
- * Landscape layout: info left, clock right.
+ * shell.js — Permanent header / night clock layout (ES5)
  */
 
 /* global AmbientDisplay */
@@ -8,12 +7,11 @@ var AmbientDisplay = AmbientDisplay || {};
 
 AmbientDisplay.shell = (function () {
   var root = null;
-  var infoEl = null;
-  var clockEl = null;
   var greetingEl = null;
   var timeEl = null;
   var weekdayEl = null;
   var dateEl = null;
+  var nightMessageEl = null;
   var config = null;
   var appConfig = null;
   var tickTimer = null;
@@ -26,6 +24,7 @@ AmbientDisplay.shell = (function () {
     var use24 = shellConfig.hourFormat === '24';
     var suffix = '';
     var h = hours;
+    var showSeconds = shellConfig.showSeconds !== false;
 
     if (!use24) {
       suffix = hours >= 12 ? 'PM' : 'AM';
@@ -40,7 +39,7 @@ AmbientDisplay.shell = (function () {
       minutes: AmbientDisplay.providerUtils.pad(minutes),
       seconds: AmbientDisplay.providerUtils.pad(seconds),
       ampm: suffix,
-      showSeconds: shellConfig.showSeconds !== false
+      showSeconds: showSeconds
     };
   }
 
@@ -83,7 +82,8 @@ AmbientDisplay.shell = (function () {
   }
 
   function updateGreeting(now) {
-    var phase = AmbientDisplay.dayPhase.getCurrentPhase(now);
+    var fullConfig = AmbientDisplay.configLoader ? AmbientDisplay.configLoader.getConfig() : null;
+    var phase = AmbientDisplay.dayPhase.getCurrentPhase(now, fullConfig);
     var base = AmbientDisplay.providerUtils.greetingForPhase(phase);
     var emoji = AmbientDisplay.providerUtils.greetingEmoji(phase);
     var name = appConfig && appConfig.user ? appConfig.user.name : '';
@@ -113,6 +113,44 @@ AmbientDisplay.shell = (function () {
     }
   }
 
+  function applyLayout(screen) {
+    var modeId = screen.displayMode || 'standard';
+    var flags = screen.flags || {};
+    var isPrepare = modeId === 'prepare';
+    var isBedside = modeId === 'bedside';
+    var shellClass = 'ambient-shell';
+
+    if (!root) {
+      return;
+    }
+
+    if (isPrepare) {
+      shellClass += ' ambient-shell--prepare';
+    } else if (isBedside) {
+      shellClass += ' ambient-shell--bedside';
+    }
+
+    root.className = shellClass;
+
+    if (greetingEl) {
+      greetingEl.style.display = flags.showGreeting === false ? 'none' : '';
+    }
+    if (weekdayEl) {
+      weekdayEl.style.display = flags.showWeekday === false ? 'none' : '';
+    }
+    if (dateEl) {
+      dateEl.style.display = flags.showDate === false ? 'none' : '';
+    }
+    if (nightMessageEl) {
+      if (isPrepare && screen.prepareMessage && flags.showPersonalMessage !== false) {
+        nightMessageEl.textContent = screen.prepareMessage;
+        nightMessageEl.style.display = 'block';
+      } else {
+        nightMessageEl.style.display = 'none';
+      }
+    }
+  }
+
   function mount(container, fullConfig) {
     appConfig = fullConfig;
     config = fullConfig.shell || {};
@@ -122,14 +160,11 @@ AmbientDisplay.shell = (function () {
     root.className = 'ambient-shell';
     root.setAttribute('role', 'banner');
 
-    infoEl = document.createElement('div');
-    infoEl.className = 'ambient-shell__info';
-
-    clockEl = document.createElement('div');
-    clockEl.className = 'ambient-shell__clock';
-
     greetingEl = document.createElement('p');
     greetingEl.className = 'ambient-shell__greeting';
+
+    timeEl = document.createElement('p');
+    timeEl.className = 'ambient-shell__time';
 
     weekdayEl = document.createElement('p');
     weekdayEl.className = 'ambient-shell__weekday';
@@ -137,16 +172,15 @@ AmbientDisplay.shell = (function () {
     dateEl = document.createElement('p');
     dateEl.className = 'ambient-shell__date';
 
-    timeEl = document.createElement('p');
-    timeEl.className = 'ambient-shell__time';
+    nightMessageEl = document.createElement('p');
+    nightMessageEl.className = 'ambient-shell__night-message';
+    nightMessageEl.style.display = 'none';
 
-    infoEl.appendChild(greetingEl);
-    infoEl.appendChild(weekdayEl);
-    infoEl.appendChild(dateEl);
-    clockEl.appendChild(timeEl);
-
-    root.appendChild(infoEl);
-    root.appendChild(clockEl);
+    root.appendChild(greetingEl);
+    root.appendChild(timeEl);
+    root.appendChild(weekdayEl);
+    root.appendChild(dateEl);
+    root.appendChild(nightMessageEl);
     container.appendChild(root);
 
     update();
@@ -168,6 +202,7 @@ AmbientDisplay.shell = (function () {
   return {
     mount: mount,
     destroy: destroy,
-    update: update
+    update: update,
+    applyLayout: applyLayout
   };
 })();
