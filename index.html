@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Ambient Display Test</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html,body{
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    background:#0f172a;
+    color:#fff;
+}
+
+.container{
+    height:100%;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    padding:30px;
+    text-align:center;
+}
+
+.clock{
+    font-size:80px;
+    font-weight:700;
+    letter-spacing:2px;
+}
+
+.date{
+    margin-top:12px;
+    font-size:24px;
+    opacity:.85;
+}
+
+.card{
+    margin-top:50px;
+    width:90%;
+    max-width:600px;
+    background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.1);
+    border-radius:20px;
+    padding:30px;
+}
+
+.message{
+    font-size:30px;
+    margin-bottom:15px;
+}
+
+.small{
+    opacity:.75;
+    line-height:1.7;
+    font-size:18px;
+}
+
+.status{
+    margin-top:40px;
+    font-size:18px;
+    color:#22c55e;
+}
+
+.pulse{
+    animation:pulse 2s infinite;
+}
+
+@keyframes pulse{
+    0%{transform:scale(1);}
+    50%{transform:scale(1.04);}
+    100%{transform:scale(1);}
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div id="clock" class="clock">--:--:--</div>
+
+<div id="date" class="date"></div>
+
+<div class="card pulse">
+
+<div class="message">
+❤️ Ambient Display
+</div>
+
+<div class="small">
+This device is running a lightweight browser dashboard.<br><br>
+If this screen stays responsive for several hours,
+the hardware is suitable for the project.
+</div>
+
+</div>
+
+<div class="status" id="status">
+Running...
+</div>
+
+</div>
+
+<script>
+
+function updateClock(){
+
+    const now = new Date();
+
+    document.getElementById("clock").textContent =
+        now.toLocaleTimeString();
+
+    document.getElementById("date").textContent =
+        now.toDateString();
+
+}
+
+updateClock();
+
+setInterval(updateClock,1000);
+
+let seconds = 0;
+
+setInterval(()=>{
+
+    seconds++;
+
+    document.getElementById("status").textContent =
+        "Running for " + seconds + " seconds";
+
+},1000);
+
+</script>
+
+</body>
+</html>
