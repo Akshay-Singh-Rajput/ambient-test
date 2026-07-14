@@ -2,17 +2,12 @@
  * refresh-control.js — Status time and manual refresh for Ambient Display
  *
  * Shows device time with seconds and a refresh control on the kiosk UI.
- * Hidden in admin preview mode (?preview=1) so the iframe matches a clean view.
  */
 
 (function () {
   var TICK_MS = 1000;
   var statusEl = null;
   var tickTimer = null;
-
-  function isPreviewMode() {
-    return window.location.search.indexOf('preview=1') !== -1;
-  }
 
   function pad(value) {
     return value < 10 ? '0' + value : String(value);
@@ -93,10 +88,6 @@
   }
 
   function init() {
-    if (isPreviewMode()) {
-      return;
-    }
-
     if (document.readyState === 'loading') {
       if (document.addEventListener) {
         document.addEventListener('DOMContentLoaded', buildControls, false);

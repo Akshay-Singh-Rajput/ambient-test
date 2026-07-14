@@ -1,94 +1,69 @@
 /**
- * sw-register.js — Service worker registration for Ambient Display
+ * sw-register.js — Service worker disabled (temporary)
  *
- * Registers the service worker, checks cache-manifest.json for version
- * changes, and triggers an update when a new release is detected.
+ * Unregisters any existing workers and clears versioned caches so the display
+ * always loads fresh assets from the network during development.
  */
 
-/* global AmbientDisplay */
 (function () {
-  var MANIFEST_PATH = './cache-manifest.json';
-  var VERSION_KEY = 'cache-version';
-  var pendingReload = false;
+  var CACHE_PREFIX = 'ambient-display-v';
 
-  /**
-   * Service Workers are not available on very old Safari (pre-iOS 11.3).
-   * The app still runs — it just won't cache offline.
-   */
-  function isSupported() {
-    return 'serviceWorker' in navigator;
-  }
+  function clearAmbientCaches() {
+    if (!('caches' in window)) {
+      return;
+    }
 
-  /**
-   * Compare manifest version with stored version; update SW when changed.
-   */
-  function checkVersion(registration) {
-    fetch(MANIFEST_PATH, { cache: 'no-store' }).then(function (response) {
-      return response.json();
-    }).then(function (manifest) {
-      var storedVersion = AmbientDisplay.storage.get(VERSION_KEY);
+    caches.keys().then(function (keys) {
+      var i;
+      var tasks = [];
 
-      if (storedVersion !== manifest.version) {
-        pendingReload = true;
-        registration.update();
-
-        if (registration.waiting) {
-          registration.waiting.postMessage('skipWaiting');
+      for (i = 0; i < keys.length; i++) {
+        if (keys[i].indexOf(CACHE_PREFIX) === 0) {
+          tasks.push(caches.delete(keys[i]));
         }
       }
 
-      AmbientDisplay.storage.set(VERSION_KEY, manifest.version);
+      return Promise.all(tasks);
     }).catch(function () {
-      /* Offline — continue with cached assets */
+      /* Cache API unavailable or blocked */
     });
   }
 
-  /**
-   * Reload once when a new service worker takes control after a version bump.
-   */
-  function bindControllerChange() {
-    navigator.serviceWorker.addEventListener('controllerchange', function () {
-      if (pendingReload) {
-        pendingReload = false;
-        window.location.reload();
-      }
-    });
-  }
+  function unregisterWorkers() {
+    if (!('serviceWorker' in navigator)) {
+      return;
+    }
 
-  /**
-   * Register the service worker after the page load event.
-   */
-  function register() {
-    navigator.serviceWorker.register('./service-worker.js').then(function (registration) {
-      checkVersion(registration);
+    if (navigator.serviceWorker.getRegistrations) {
+      navigator.serviceWorker.getRegistrations().then(function (registrations) {
+        var i;
 
-      registration.addEventListener('updatefound', function () {
-        var installing = registration.installing;
-
-        if (!installing) {
-          return;
+        for (i = 0; i < registrations.length; i++) {
+          registrations[i].unregister();
         }
-
-        installing.addEventListener('statechange', function () {
-          if (installing.state === 'installed' && navigator.serviceWorker.controller) {
-            installing.postMessage('skipWaiting');
-          }
-        });
+      }).catch(function () {
+        /* Ignore unregister failures */
       });
-    }).catch(function () {
-      /* Registration failed — app continues without offline support */
-    });
+      return;
+    }
+
+    if (navigator.serviceWorker.ready) {
+      navigator.serviceWorker.ready.then(function (registration) {
+        registration.unregister();
+      }).catch(function () {
+        /* Ignore unregister failures */
+      });
+    }
   }
 
-  if (!isSupported()) {
-    return;
+  function disable() {
+    unregisterWorkers();
+    clearAmbientCaches();
   }
-
-  bindControllerChange();
 
   if (window.addEventListener) {
-    window.addEventListener('load', register, false);
+    window.addEventListener('load', disable, false);
   } else {
-    window.onload = register;
+    window.onload = disable;
   }
 }());
