@@ -33,10 +33,20 @@ body {
   border-radius: 999px;
 }
 
-.admin-layout { display: flex; min-height: calc(100vh - 72px); }
+.admin-shell {
+  display: flex;
+  min-height: calc(100vh - 72px);
+}
+
+.admin-workspace {
+  flex: 1;
+  display: flex;
+  min-width: 0;
+}
 
 .admin-nav {
   width: 200px;
+  flex-shrink: 0;
   padding: 1rem 0.75rem;
   border-right: 1px solid #1e293b;
   display: flex;
@@ -58,7 +68,74 @@ body {
 .admin-nav__item:hover { background: #1e293b; color: #f8fafc; }
 .admin-nav__item--active { background: #1d4ed8; color: #fff; }
 
-.admin-main { flex: 1; padding: 1.5rem; overflow-y: auto; }
+.admin-main {
+  flex: 1;
+  min-width: 0;
+  padding: 1.5rem;
+  overflow-y: auto;
+}
+
+.admin-preview-sidebar {
+  width: min(420px, 38vw);
+  flex-shrink: 0;
+  border-left: 1px solid #1e293b;
+  background: #111827;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.admin-preview-sidebar__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.admin-preview-sidebar__header h2 {
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+.admin-preview-sidebar__header p {
+  font-size: 0.75rem;
+  color: #64748b;
+  margin-top: 0.25rem;
+}
+
+.admin-preview-sidebar__status--ok { color: #86efac; }
+
+.admin-badge--live {
+  font-variant-numeric: tabular-nums;
+  color: #86efac;
+  border-color: rgba(134, 239, 172, 0.35);
+}
+
+.admin-btn--icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.admin-field--compact { margin-bottom: 0; }
+
+.admin-input--full { max-width: none; }
+
+.admin-link-block {
+  display: block;
+  text-align: center;
+  font-size: 0.8125rem;
+  color: #60a5fa;
+  text-decoration: none;
+  padding: 0.5rem;
+}
+
+.admin-link-block:hover { text-decoration: underline; }
 
 .admin-panel { display: none; }
 .admin-panel--active { display: block; }
@@ -207,16 +284,19 @@ body {
 .admin-preview-controls .admin-field { margin-bottom: 0; }
 
 .admin-preview-frame-wrap {
+  flex: 1;
+  min-height: 360px;
   border: 1px solid #334155;
   border-radius: 0.5rem;
   overflow: hidden;
   background: #000;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
 }
 
 .admin-preview-frame {
   width: 100%;
-  height: 480px;
+  height: 100%;
+  min-height: 360px;
   border: none;
   display: block;
 }

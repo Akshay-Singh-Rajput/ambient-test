@@ -18,6 +18,7 @@
     "./js/renderer.js",
     "./js/scheduler.js",
     "./js/sw-register.js",
+    "./js/refresh-control.js",
     "./js/app.js",
     "./widgets/clock.js",
     "./config/config.json",

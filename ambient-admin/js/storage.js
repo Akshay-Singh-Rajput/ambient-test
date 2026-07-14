@@ -1,44 +1,33 @@
 /**
- * storage.js — Draft persistence for Ambient Display Admin
- *
- * Saves the in-progress config to localStorage so edits survive page reloads.
+ * storage.js — Draft persistence (ES6 module)
  */
 
-var AmbientAdmin = AmbientAdmin || {};
+const DRAFT_KEY = 'ambient-admin:draft';
+const VERSION_KEY = 'ambient-admin:draft-version';
 
-AmbientAdmin.storage = (function () {
-  var DRAFT_KEY = 'ambient-admin:draft';
-  var VERSION_KEY = 'ambient-admin:draft-version';
-
-  function getDraft() {
+export const storage = {
+  getDraft() {
     try {
-      var raw = localStorage.getItem(DRAFT_KEY);
+      const raw = localStorage.getItem(DRAFT_KEY);
       return raw ? JSON.parse(raw) : null;
-    } catch (error) {
+    } catch {
       return null;
     }
-  }
+  },
 
-  function saveDraft(config) {
+  saveDraft(config) {
     localStorage.setItem(DRAFT_KEY, JSON.stringify(config));
     localStorage.setItem(VERSION_KEY, String(Date.now()));
     return true;
-  }
+  },
 
-  function clearDraft() {
+  clearDraft() {
     localStorage.removeItem(DRAFT_KEY);
     localStorage.removeItem(VERSION_KEY);
-  }
+  },
 
-  function getDraftTimestamp() {
-    var ts = localStorage.getItem(VERSION_KEY);
+  getDraftTimestamp() {
+    const ts = localStorage.getItem(VERSION_KEY);
     return ts ? parseInt(ts, 10) : null;
   }
-
-  return {
-    getDraft: getDraft,
-    saveDraft: saveDraft,
-    clearDraft: clearDraft,
-    getDraftTimestamp: getDraftTimestamp
-  };
-})();
+};

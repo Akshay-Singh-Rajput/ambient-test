@@ -1,58 +1,34 @@
 /**
- * asset-library.js — Asset staging for Ambient Display Admin
- *
- * Stores uploaded images and videos in IndexedDB until publish copies them
- * into ambient-display/assets/.
+ * asset-library.js — Asset staging (ES6 module)
  */
 
-var AmbientAdmin = AmbientAdmin || {};
+const DB_NAME = 'ambient-admin-assets';
+const STORE_NAME = 'assets';
+let db = null;
 
-AmbientAdmin.assetLibrary = (function () {
-  var DB_NAME = 'ambient-admin-assets';
-  var STORE_NAME = 'assets';
-  var db = null;
+const openDb = () => new Promise((resolve, reject) => {
+  if (db) return resolve(db);
+  const request = indexedDB.open(DB_NAME, 1);
+  request.onupgradeneeded = (e) => {
+    if (!e.target.result.objectStoreNames.contains(STORE_NAME)) {
+      e.target.result.createObjectStore(STORE_NAME, { keyPath: 'id' });
+    }
+  };
+  request.onsuccess = (e) => { db = e.target.result; resolve(db); };
+  request.onerror = () => reject(request.error);
+});
 
-  function openDb() {
-    return new Promise(function (resolve, reject) {
-      if (db) {
-        resolve(db);
-        return;
-      }
+const buildPublishPath = (file) => {
+  const folder = file.type.startsWith('video') ? 'videos' : 'images';
+  const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '-').toLowerCase();
+  return `assets/${folder}/${safeName}`;
+};
 
-      var request = indexedDB.open(DB_NAME, 1);
-
-      request.onupgradeneeded = function (event) {
-        var database = event.target.result;
-        if (!database.objectStoreNames.contains(STORE_NAME)) {
-          database.createObjectStore(STORE_NAME, { keyPath: 'id' });
-        }
-      };
-
-      request.onsuccess = function (event) {
-        db = event.target.result;
-        resolve(db);
-      };
-
-      request.onerror = function () {
-        reject(request.error);
-      };
-    });
-  }
-
-  function makeId() {
-    return 'asset-' + Date.now() + '-' + Math.floor(Math.random() * 10000);
-  }
-
-  function buildPublishPath(file) {
-    var folder = file.type.indexOf('video') === 0 ? 'videos' : 'images';
-    var safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '-').toLowerCase();
-    return 'assets/' + folder + '/' + safeName;
-  }
-
-  function addFile(file) {
-    return openDb().then(function (database) {
-      var record = {
-        id: makeId(),
+export const assetLibrary = {
+  addFile(file) {
+    return openDb().then((database) => {
+      const record = {
+        id: `asset-${Date.now()}-${Math.floor(Math.random() * 10000)}`,
         name: file.name,
         type: file.type,
         size: file.size,
@@ -60,56 +36,46 @@ AmbientAdmin.assetLibrary = (function () {
         blob: file,
         addedAt: Date.now()
       };
-
-      return new Promise(function (resolve, reject) {
-        var tx = database.transaction(STORE_NAME, 'readwrite');
+      return new Promise((resolve, reject) => {
+        const tx = database.transaction(STORE_NAME, 'readwrite');
         tx.objectStore(STORE_NAME).put(record);
-        tx.oncomplete = function () { resolve(record); };
-        tx.onerror = function () { reject(tx.error); };
+        tx.oncomplete = () => resolve(record);
+        tx.onerror = () => reject(tx.error);
       });
     });
-  }
+  },
 
-  function listAssets() {
-    return openDb().then(function (database) {
-      return new Promise(function (resolve, reject) {
-        var tx = database.transaction(STORE_NAME, 'readonly');
-        var request = tx.objectStore(STORE_NAME).getAll();
-        request.onsuccess = function () { resolve(request.result || []); };
-        request.onerror = function () { reject(request.error); };
-      });
-    });
-  }
+  listAssets() {
+    return openDb().then((database) => new Promise((resolve, reject) => {
+      const request = database.transaction(STORE_NAME, 'readonly').objectStore(STORE_NAME).getAll();
+      request.onsuccess = () => resolve(request.result || []);
+      request.onerror = () => reject(request.error);
+    }));
+  },
 
-  function removeAsset(id) {
-    return openDb().then(function (database) {
-      return new Promise(function (resolve, reject) {
-        var tx = database.transaction(STORE_NAME, 'readwrite');
-        tx.objectStore(STORE_NAME).delete(id);
-        tx.oncomplete = function () { resolve(true); };
-        tx.onerror = function () { reject(tx.error); };
-      });
-    });
-  }
+  removeAsset(id) {
+    return openDb().then((database) => new Promise((resolve, reject) => {
+      const tx = database.transaction(STORE_NAME, 'readwrite');
+      tx.objectStore(STORE_NAME).delete(id);
+      tx.oncomplete = () => resolve(true);
+      tx.onerror = () => reject(tx.error);
+    }));
+  },
 
-  function renderGrid(container) {
-    listAssets().then(function (assets) {
-      container.innerHTML = '';
+  renderGrid(container) {
+    assetLibrary.listAssets().then((assets) => {
+      container.innerHTML = assets.length
+        ? ''
+        : '<p class="admin-empty">No assets uploaded yet.</p>';
 
-      if (!assets.length) {
-        container.innerHTML = '<p class="admin-empty">No assets uploaded yet.</p>';
-        return;
-      }
-
-      assets.forEach(function (asset) {
-        var card = document.createElement('div');
+      assets.forEach((asset) => {
+        const card = document.createElement('div');
         card.className = 'admin-asset-card';
-
-        var preview = document.createElement('div');
+        const preview = document.createElement('div');
         preview.className = 'admin-asset-card__preview';
 
-        if (asset.type.indexOf('image') === 0) {
-          var img = document.createElement('img');
+        if (asset.type.startsWith('image')) {
+          const img = document.createElement('img');
           img.src = URL.createObjectURL(asset.blob);
           img.alt = asset.name;
           preview.appendChild(img);
@@ -117,63 +83,47 @@ AmbientAdmin.assetLibrary = (function () {
           preview.textContent = 'Video';
         }
 
-        var meta = document.createElement('div');
+        const meta = document.createElement('div');
         meta.className = 'admin-asset-card__meta';
-        meta.innerHTML = '<strong>' + asset.name + '</strong><code>' + asset.publishPath + '</code>';
+        meta.innerHTML = `<strong>${asset.name}</strong><code>${asset.publishPath}</code>`;
 
-        var removeBtn = document.createElement('button');
+        const removeBtn = document.createElement('button');
         removeBtn.type = 'button';
         removeBtn.className = 'admin-btn admin-btn--ghost admin-btn--small';
         removeBtn.textContent = 'Remove';
-        removeBtn.addEventListener('click', function () {
-          removeAsset(asset.id).then(function () {
-            renderGrid(container);
-          });
+        removeBtn.addEventListener('click', () => {
+          assetLibrary.removeAsset(asset.id).then(() => assetLibrary.renderGrid(container));
         });
 
-        card.appendChild(preview);
-        card.appendChild(meta);
-        card.appendChild(removeBtn);
+        card.append(preview, meta, removeBtn);
         container.appendChild(card);
       });
     });
-  }
+  },
 
-  function bindUpload(dropzone, input, grid) {
-    function handleFiles(files) {
-      Array.from(files).forEach(function (file) {
-        addFile(file).then(function () {
-          renderGrid(grid);
-        });
+  bindUpload(dropzone, input, grid) {
+    const handleFiles = (files) => {
+      [...files].forEach((file) => {
+        assetLibrary.addFile(file).then(() => assetLibrary.renderGrid(grid));
       });
-    }
+    };
 
-    input.addEventListener('change', function () {
+    input?.addEventListener('change', () => {
       handleFiles(input.files);
       input.value = '';
     });
 
-    dropzone.addEventListener('dragover', function (event) {
-      event.preventDefault();
+    dropzone?.addEventListener('dragover', (e) => {
+      e.preventDefault();
       dropzone.classList.add('admin-dropzone--active');
     });
-
-    dropzone.addEventListener('dragleave', function () {
+    dropzone?.addEventListener('dragleave', () => dropzone.classList.remove('admin-dropzone--active'));
+    dropzone?.addEventListener('drop', (e) => {
+      e.preventDefault();
       dropzone.classList.remove('admin-dropzone--active');
+      handleFiles(e.dataTransfer.files);
     });
 
-    dropzone.addEventListener('drop', function (event) {
-      event.preventDefault();
-      dropzone.classList.remove('admin-dropzone--active');
-      handleFiles(event.dataTransfer.files);
-    });
+    assetLibrary.renderGrid(grid);
   }
-
-  return {
-    addFile: addFile,
-    listAssets: listAssets,
-    removeAsset: removeAsset,
-    renderGrid: renderGrid,
-    bindUpload: bindUpload
-  };
-})();
+};

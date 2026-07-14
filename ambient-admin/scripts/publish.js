@@ -20,7 +20,7 @@ var PLATFORM_ASSETS = [
   './widgets/clock.css',
   './js/storage.js', './js/config-loader.js', './js/theme-engine.js',
   './js/layout-engine.js', './js/asset-manager.js', './js/widget-registry.js',
-  './js/renderer.js', './js/scheduler.js', './js/sw-register.js', './js/app.js',
+  './js/renderer.js', './js/scheduler.js', './js/sw-register.js', './js/refresh-control.js', './js/app.js',
   './widgets/clock.js', './config/config.json', './service-worker.js'
 ];
 

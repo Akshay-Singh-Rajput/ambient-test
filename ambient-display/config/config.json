@@ -71,7 +71,7 @@
             "id": "night-clock",
             "size": { "width": "auto", "height": "auto" },
             "options": {
-              "showSeconds": false,
+              "showSeconds": true,
               "showDate": true,
               "hourFormat": "12",
               "timezone": "Asia/Kolkata"

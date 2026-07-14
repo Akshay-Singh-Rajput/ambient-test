@@ -1,51 +1,51 @@
 /**
- * preview.js — Live display preview for Ambient Display Admin
- *
- * Sends draft config to the display test harness via postMessage so admin
- * edits reflect on the user-side renderer without publishing.
+ * preview.js — Live user-display preview via postMessage (ES6 module)
  */
 
-var AmbientAdmin = AmbientAdmin || {};
+import { configModel } from './config-model.js';
 
-AmbientAdmin.preview = (function () {
-  var HARNESS_URL = '../ambient-display/test/index.html?preview=1';
-  var iframe = null;
-  var forceSceneSelect = null;
+const PREVIEW_URL = '../ambient-display/index.html?preview=1';
+let iframe = null;
+let forceSceneSelect = null;
+let syncStatusEl = null;
+let debounceTimer = null;
 
-  function getIframe() {
-    return document.getElementById('display-preview-frame');
-  }
+const formatSyncTime = (date) =>
+  date.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 
-  function sendConfig() {
-    var frame = getIframe();
-
-    if (!frame || !frame.contentWindow) {
-      return;
-    }
+export const preview = {
+  sendConfig() {
+    const frame = iframe ?? document.getElementById('display-preview-frame');
+    if (!frame?.contentWindow) return;
 
     frame.contentWindow.postMessage({
       type: 'ambient:preview-config',
-      config: AmbientAdmin.configModel.getConfig(),
-      forceScene: forceSceneSelect ? forceSceneSelect.value : null
+      config: configModel.getConfig(),
+      forceScene: forceSceneSelect?.value || null
     }, '*');
-  }
 
-  function bind() {
-    iframe = getIframe();
-    forceSceneSelect = document.getElementById('preview-scene-select');
-
-    iframe.addEventListener('load', sendConfig);
-
-    if (forceSceneSelect) {
-      forceSceneSelect.addEventListener('change', sendConfig);
+    if (syncStatusEl) {
+      syncStatusEl.textContent = `Synced ${formatSyncTime(new Date())}`;
+      syncStatusEl.classList.add('admin-preview-sidebar__status--ok');
     }
+  },
 
-    document.getElementById('btn-preview-refresh').addEventListener('click', sendConfig);
+  scheduleSend() {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => this.sendConfig(), 120);
+  },
 
-    AmbientAdmin.configModel.onChange(function () {
-      sendConfig();
-    });
+  bind() {
+    iframe = document.getElementById('display-preview-frame');
+    forceSceneSelect = document.getElementById('preview-scene-select');
+    syncStatusEl = document.getElementById('preview-sync-status');
+
+    iframe?.addEventListener('load', () => this.sendConfig());
+    forceSceneSelect?.addEventListener('change', () => this.sendConfig());
+    document.getElementById('btn-preview-refresh')?.addEventListener('click', () => this.sendConfig());
+
+    configModel.onChange(() => this.scheduleSend());
   }
+};
 
-  return { bind: bind, sendConfig: sendConfig };
-})();
+export { PREVIEW_URL };
