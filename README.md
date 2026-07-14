@@ -21,9 +21,6 @@ python -m http.server 8080
 |---|---|
 | Display | http://localhost:8080/ambient-display/ |
 | Admin | http://localhost:8080/ambient-admin/ |
-| **Test hub** | http://localhost:8080/test/ |
-
-See [test/README.md](test/README.md) for the full testing workflow (fixtures, admin preview, QA checklist).
 
 ## Repository layout
 

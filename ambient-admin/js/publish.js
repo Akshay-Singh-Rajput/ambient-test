@@ -9,12 +9,17 @@ import { assetLibrary } from './asset-library.js';
 const PLATFORM_ASSETS = [
   './', './index.html', './cache-manifest.json',
   './css/app.css', './css/themes.css', './css/layouts.css', './css/assets.css',
-  './widgets/clock.css',
+  './cards/cards.css', './cards/clock.css', './cards/greeting.css',
+  './cards/quote.css', './cards/countdown.css', './cards/status.css',
+  './cards/card-utils.js', './cards/clock.js', './cards/greeting.js',
+  './cards/quote.js', './cards/countdown.js', './cards/photo.js', './cards/status.js',
   './js/storage.js', './js/config-loader.js', './js/theme-engine.js',
-  './js/layout-engine.js', './js/asset-manager.js', './js/widget-registry.js',
-  './js/renderer.js', './js/scheduler.js', './js/sw-register.js',
+  './js/layout-engine.js', './js/asset-manager.js', './js/card-registry.js',
+  './js/scene-loader.js', './js/scene.js', './js/scene-manager.js',
+  './js/renderer.js', './js/sw-register.js',
   './js/refresh-control.js', './js/app.js',
-  './widgets/clock.js', './config/config.json', './service-worker.js'
+  './css/scenes.css',
+  './config/config.json', './service-worker.js'
 ];
 
 const downloadFile = (filename, content) => {

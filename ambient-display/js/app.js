@@ -1,129 +1,115 @@
 /**
- * app.js — Entry point for Ambient Display
- *
- * Bootstraps the platform: loads configuration and hands control to the
- * scheduler. Supports admin live preview via postMessage (?preview=1).
+ * app.js — Always-on ambient display entry point (ES5)
  */
 
 /* global AmbientDisplay */
 (function () {
   var ROOT_ID = 'ambient-root';
+  var refreshTimer = null;
+  var REFRESH_MS = 60000;
 
   function isPreviewMode() {
     return window.location.search.indexOf('preview=1') !== -1;
   }
 
-  function getRootElement() {
-    return document.getElementById(ROOT_ID);
+  function renderFrame() {
+    var screen = AmbientDisplay.presentationEngine.buildScreen(new Date());
+    AmbientDisplay.displayRenderer.render(screen);
   }
 
-  function findScene(config, sceneId) {
-    var scenes = config.scheduler && config.scheduler.scenes ? config.scheduler.scenes : [];
-    var i;
-
-    for (i = 0; i < scenes.length; i++) {
-      if (scenes[i].id === sceneId) {
-        return scenes[i];
-      }
+  function startRefreshLoop() {
+    if (refreshTimer) {
+      window.clearInterval(refreshTimer);
     }
-
-    return null;
+    refreshTimer = window.setInterval(renderFrame, REFRESH_MS);
   }
 
-  function buildSceneRenderConfig(config, sceneId) {
-    var scene = findScene(config, sceneId);
-
-    if (!scene) {
-      return config;
+  function teardown() {
+    if (refreshTimer) {
+      window.clearInterval(refreshTimer);
+      refreshTimer = null;
     }
-
-    return {
-      version: config.version,
-      theme: scene.theme || config.theme,
-      layout: scene.layout || config.layout,
-      widgets: scene.widgets || config.widgets
-    };
+    AmbientDisplay.themeEngine.stopAutoUpdate();
+    AmbientDisplay.displayRenderer.destroy();
+    AmbientDisplay.shell.destroy();
+    AmbientDisplay.providerRegistry.destroyAll();
   }
 
-  function stopScheduler() {
-    if (AmbientDisplay.scheduler && typeof AmbientDisplay.scheduler.stop === 'function') {
-      AmbientDisplay.scheduler.stop();
+  function applyDisplayProfile(config) {
+    var display = config.display || {};
+    var target = display.target || 'ipad-mini-a1455';
+    var html = document.documentElement;
+    var body = document.body;
+
+    if (target === 'ipad-mini-a1455') {
+      html.className = (html.className + ' ambient-ipad-mini').replace(/\s+/g, ' ').replace(/^\s|\s$/g, '');
+      body.className = 'ambient-body ambient-ipad-mini';
+    } else {
+      body.className = 'ambient-body';
     }
   }
 
-  function startPlatform(config, options) {
-    var rootElement = getRootElement();
-    var normalized = config;
-    var opts = options || {};
-    var sceneId = opts.forceScene || null;
-    var renderConfig;
+  function bootstrapWithConfig(config) {
+    var root = document.getElementById(ROOT_ID);
+    var settings = config.settings || {};
+    var refreshMs = settings.contentRefreshMs || REFRESH_MS;
 
-    if (!rootElement) {
+    if (!root) {
       return;
     }
 
-    if (AmbientDisplay.configLoader && AmbientDisplay.configLoader.normalizeConfig) {
-      normalized = AmbientDisplay.configLoader.normalizeConfig(config);
+    teardown();
+    root.innerHTML = '';
+
+    AmbientDisplay.configLoader.setConfig(config);
+    applyDisplayProfile(config);
+
+    var app = document.createElement('div');
+    app.className = 'ambient-app ambient-mode-normal';
+    root.appendChild(app);
+
+    AmbientDisplay.providerRegistry.initializeAll(config);
+    AmbientDisplay.themeEngine.startAutoUpdate();
+    AmbientDisplay.shell.mount(app, config);
+    AmbientDisplay.displayRenderer.mount(app, settings);
+    renderFrame();
+
+    if (refreshTimer) {
+      window.clearInterval(refreshTimer);
     }
-
-    stopScheduler();
-    AmbientDisplay.renderer.init(rootElement);
-
-    if (sceneId && normalized.scheduler && normalized.scheduler.enabled) {
-      renderConfig = buildSceneRenderConfig(normalized, sceneId);
-      AmbientDisplay.themeEngine.apply(renderConfig.theme);
-      AmbientDisplay.render(renderConfig);
-      return;
-    }
-
-    AmbientDisplay.scheduler.start(normalized);
-  }
-
-  function bootstrapFromNetwork() {
-    AmbientDisplay.renderer.init(getRootElement());
-
-    AmbientDisplay.configLoader.load(function (error, config) {
-      if (error) {
-        AmbientDisplay.renderer.renderError(
-          'Failed to load configuration. Serve over HTTP or deploy to GitHub Pages.'
-        );
-        return;
-      }
-
-      AmbientDisplay.scheduler.start(config);
-    });
+    refreshTimer = window.setInterval(renderFrame, refreshMs);
   }
 
   function bindPreviewChannel() {
     window.addEventListener('message', function (event) {
       var data = event.data;
-
       if (!data || data.type !== 'ambient:preview-config') {
         return;
       }
-
-      startPlatform(data.config, { forceScene: data.forceScene || null });
-    });
+      bootstrapWithConfig(AmbientDisplay.configLoader.normalizeConfig(data.config));
+    }, false);
   }
 
   function bootstrap() {
     if (isPreviewMode()) {
-      AmbientDisplay.renderer.init(getRootElement());
       bindPreviewChannel();
       return;
     }
 
-    bootstrapFromNetwork();
+    AmbientDisplay.configLoader.load(function (error, config) {
+      if (error) {
+        var root = document.getElementById(ROOT_ID);
+        if (root) {
+          root.innerHTML = '<div class="ambient-error">Failed to load configuration.</div>';
+        }
+        return;
+      }
+      bootstrapWithConfig(config);
+    });
   }
 
   if (document.addEventListener) {
     document.addEventListener('DOMContentLoaded', bootstrap, false);
-  } else if (document.attachEvent) {
-    document.attachEvent('onreadystatechange', function () {
-      if (document.readyState === 'complete') {
-        bootstrap();
-      }
-    });
   } else {
     window.onload = bootstrap;
   }

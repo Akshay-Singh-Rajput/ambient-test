@@ -1,56 +1,65 @@
 # Ambient Display
 
-Offline-first ambient information displays for old tablets, iPads, Raspberry Pis, smart TVs, and browsers.
+Always-on, read-only ambient information display for wall-mounted tablets, iPads, and browsers.
 
 ## Quick start
 
-Serve the folder over HTTP (required for loading `config/config.json`):
-
 ```bash
-# Python 3
 python -m http.server 8080
-
-# Node (npx, optional)
-npx serve .
 ```
 
-Open `http://localhost:8080` in the browser, or deploy the folder to **GitHub Pages**.
+Open `http://localhost:8080`.
 
-> Opening `index.html` directly via `file://` will fail to load the config due to browser security restrictions.
-
-## Project structure
+## Architecture
 
 ```
-ambient-display/
-  index.html          Entry HTML — loads CSS and JS in dependency order
-  css/app.css         Global layout and theme styles
-  js/
-    app.js            Bootstrap entry point
-    config-loader.js  Loads and validates config/config.json
-    renderer.js       DOM renderer — exposes render()
-    scheduler.js      Future widget refresh scheduler (stub)
-    storage.js        localStorage wrapper with in-memory fallback
-  widgets/            Widget implementations (future)
-  config/config.json  Runtime configuration
-  assets/             Static assets (future)
+config.json
+    ↓
+Content Providers (data + business rules)
+    ↓
+Presentation Engine (collect + sort)
+    ↓
+Presentation Rules (assign regions)
+    ↓
+Display Renderer (render DOM)
 ```
 
-## Browser support
+Permanent shell (greeting, clock, date) lives outside providers.
 
-- Vanilla JavaScript (ES5)
-- No build step, no npm packages
-- Compatible with older Safari / iOS WebKit
+## Providers
 
-## Configuration
+| Provider | Refresh |
+|---|---|
+| Clock | 1s (shell renders) |
+| Agenda | 5 min |
+| Calendar | 5 min |
+| Notes | 5 min |
+| Personal Message | 5 min |
+| Weather | 3 hr |
+| Photo | configurable |
+| Quote | 24 hr |
 
-Edit `config/config.json`:
+## Config sections
+
+`user`, `shell`, `settings`, `theme`, `weather`, `agenda`, `photos`, `quotes`, `notes`, `calendar`, `personalMessages`
+
+## Target device
+
+**iPad mini A1455** — 1024 × 768 landscape (4:3)
+
+The UI is locked to this resolution via `css/ipad-mini.css`. Config section:
 
 ```json
-{
-  "version": "1.0.0",
-  "theme": { "name": "dark" },
-  "widgets": []
+"display": {
+  "target": "ipad-mini-a1455",
+  "width": 1024,
+  "height": 768,
+  "orientation": "landscape"
 }
 ```
 
-Supported themes: `dark`, `light`.
+Add to Home Screen on the iPad for full-screen kiosk use. Keep the device in landscape — a portrait notice appears if rotated.
+
+## Browser support
+
+ES5 JavaScript — no build step, no frameworks. Compatible with older Safari / iOS WebKit.

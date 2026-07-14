@@ -1,7 +1,0 @@
-{
-  "version": "test-layout-fullscreen",
-  "scheduler": { "enabled": false },
-  "theme": { "name": "midnight" },
-  "layout": { "type": "fullscreen", "gap": "0", "padding": "0" },
-  "widgets": [{ "type": "clock", "id": "clock", "size": { "width": "full", "height": "full" }, "options": { "showSeconds": true, "showDate": true, "hourFormat": "12", "timezone": "Asia/Kolkata" } }]
-}

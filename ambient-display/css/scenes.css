@@ -1,0 +1,90 @@
+/**
+ * scenes.css — Scene shell, backgrounds, and transitions
+ */
+
+.ambient-scene {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
+}
+
+.ambient-scene > .ambient-layout {
+  width: 100%;
+  height: 100%;
+}
+
+.ambient-scene--transition-fade {
+  -webkit-animation: ambient-scene-fade-in 0.45s ease;
+  animation: ambient-scene-fade-in 0.45s ease;
+}
+
+.ambient-scene--transition-slide {
+  -webkit-animation: ambient-scene-slide-in 0.45s ease;
+  animation: ambient-scene-slide-in 0.45s ease;
+}
+
+@-webkit-keyframes ambient-scene-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes ambient-scene-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@-webkit-keyframes ambient-scene-slide-in {
+  from {
+    opacity: 0;
+    -webkit-transform: translateY(12px);
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    -webkit-transform: translateY(0);
+    transform: translateY(0);
+  }
+}
+
+@keyframes ambient-scene-slide-in {
+  from {
+    opacity: 0;
+    -webkit-transform: translateY(12px);
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    -webkit-transform: translateY(0);
+    transform: translateY(0);
+  }
+}
+
+/* --- Minimal layout: calm single-focus scene --- */
+
+.ambient-layout--minimal {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  align-items: center;
+}
+
+.ambient-layout--minimal > .ambient-card {
+  width: auto;
+  max-width: 100%;
+}
+
+.ambient-layout--minimal > .ambient-card + .ambient-card {
+  margin-top: 1.5rem;
+  margin-top: var(--layout-gap, 1.5rem);
+}

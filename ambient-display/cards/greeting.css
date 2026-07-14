@@ -1,0 +1,40 @@
+/**
+ * cards/greeting.css
+ */
+
+.greeting-card {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  justify-content: center;
+}
+
+.greeting-card__text {
+  font-size: 2rem;
+  font-weight: 300;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+}
+
+.greeting-card__name {
+  margin-top: 0.35em;
+  font-size: 2.75rem;
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+@media (min-width: 900px) {
+  .greeting-card__text {
+    font-size: 1.75rem;
+  }
+
+  .greeting-card__name {
+    font-size: 2.25rem;
+  }
+}

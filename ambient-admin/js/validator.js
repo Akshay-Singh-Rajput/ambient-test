@@ -3,9 +3,9 @@
  */
 
 const THEMES = ['light', 'dark', 'midnight', 'minimal'];
-const LAYOUTS = ['center', 'stack', 'grid', 'fullscreen', 'top-bottom'];
+const LAYOUTS = ['center', 'stack', 'grid', 'fullscreen', 'top-bottom', 'dashboard', 'minimal'];
 const SCENES = ['morning', 'day', 'evening', 'night'];
-const WIDGETS = ['clock'];
+const CARD_TYPES = ['clock', 'greeting', 'quote', 'countdown', 'photo', 'status'];
 const TIME_PATTERN = /^([01]\d|2[0-3]):([0-5]\d)$/;
 
 const pushError = (errors, path, message) => errors.push({ path, message });
@@ -38,11 +38,10 @@ export const validator = {
           if (!scene.layout?.type || !LAYOUTS.includes(scene.layout.type)) {
             pushError(errors, `scheduler.scenes[${i}].layout.type`, `Layout must be one of: ${LAYOUTS.join(', ')}`);
           }
-          (scene.widgets || []).forEach((widget, j) => {
-            if (!widget.type || !WIDGETS.includes(widget.type)) {
-              pushError(errors, `scheduler.scenes[${i}].widgets[${j}].type`, `Unknown widget type: ${widget.type || '(missing)'}`);
+          (scene.cards || scene.widgets || []).forEach((card, j) => {
+            if (!card.type || !CARD_TYPES.includes(card.type)) {
+              pushError(errors, `scheduler.scenes[${i}].cards[${j}].type`, `Unknown card type: ${card.type || '(missing)'}`);
             }
-            if (!widget.id) pushError(errors, `scheduler.scenes[${i}].widgets[${j}].id`, 'Widget id is required');
           });
         });
       }
@@ -54,11 +53,10 @@ export const validator = {
     if (!config.layout?.type || !LAYOUTS.includes(config.layout.type)) {
       pushError(errors, 'layout.type', `Layout must be one of: ${LAYOUTS.join(', ')}`);
     }
-    (config.widgets || []).forEach((widget, i) => {
-      if (!widget.type || !WIDGETS.includes(widget.type)) {
-        pushError(errors, `widgets[${i}].type`, `Unknown widget type: ${widget.type || '(missing)'}`);
+    (config.cards || config.widgets || []).forEach((card, i) => {
+      if (!card.type || !CARD_TYPES.includes(card.type)) {
+        pushError(errors, `cards[${i}].type`, `Unknown card type: ${card.type || '(missing)'}`);
       }
-      if (!widget.id) pushError(errors, `widgets[${i}].id`, 'Widget id is required');
     });
 
     return { valid: errors.length === 0, errors };

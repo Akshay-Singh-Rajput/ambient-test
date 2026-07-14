@@ -1,7 +1,0 @@
-{
-  "version": "test-layout-stack",
-  "scheduler": { "enabled": false },
-  "theme": { "name": "dark" },
-  "layout": { "type": "stack", "gap": "2rem", "padding": "2rem" },
-  "widgets": [{ "type": "clock", "id": "clock", "size": { "width": "full", "height": "auto" }, "options": { "showSeconds": true, "showDate": true, "hourFormat": "12", "timezone": "Asia/Kolkata" } }]
-}

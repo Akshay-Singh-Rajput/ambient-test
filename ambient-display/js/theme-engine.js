@@ -1,108 +1,92 @@
 /**
- * theme-engine.js — Theme engine for Ambient Display
- *
- * Reads theme.name from config.json and applies the matching CSS class to
- * the document root. All visual tokens live in css/themes.css — this module
- * only toggles classes; it never writes inline styles or modifies widget HTML.
+ * theme-engine.js — Phase-based theme with smooth CSS transitions (ES5)
  */
 
 /* global AmbientDisplay */
 var AmbientDisplay = AmbientDisplay || {};
 
 AmbientDisplay.themeEngine = (function () {
-  var SUPPORTED_THEMES = ['light', 'dark', 'midnight', 'minimal'];
-  var DEFAULT_THEME = 'dark';
-  var CLASS_PREFIX = 'theme-';
-  var activeTheme = DEFAULT_THEME;
+  var PHASES = ['morning', 'afternoon', 'evening', 'night'];
+  var CLASS_PREFIX = 'phase-';
+  var activePhase = null;
+  var checkTimer = null;
 
-  /**
-   * Strip a single class name from an element (ES5 fallback for classList.remove).
-   */
   function removeClass(element, className) {
     var pattern = new RegExp('(^|\\s)' + className + '(\\s|$)', 'g');
-    element.className = element.className.replace(pattern, ' ').replace(/\s+/g, ' ');
-
-    if (element.className.charAt(0) === ' ') {
-      element.className = element.className.substring(1);
-    }
-
-    if (element.className.charAt(element.className.length - 1) === ' ') {
-      element.className = element.className.substring(0, element.className.length - 1);
-    }
+    element.className = element.className.replace(pattern, ' ').replace(/\s+/g, ' ').replace(/^\s|\s$/g, '');
   }
 
-  /**
-   * Remove every theme class from the root element before applying a new one.
-   */
-  function clearThemeClasses(element) {
+  function clearPhaseClasses(element) {
     var i;
-    var themeClass;
-
-    for (i = 0; i < SUPPORTED_THEMES.length; i++) {
-      themeClass = CLASS_PREFIX + SUPPORTED_THEMES[i];
-
+    for (i = 0; i < PHASES.length; i++) {
       if (element.classList) {
-        element.classList.remove(themeClass);
+        element.classList.remove(CLASS_PREFIX + PHASES[i]);
       } else {
-        removeClass(element, themeClass);
+        removeClass(element, CLASS_PREFIX + PHASES[i]);
       }
     }
   }
 
-  /**
-   * Validate theme name from config; unknown values fall back to default.
-   */
-  function resolveThemeName(themeConfig) {
-    var requested = themeConfig && themeConfig.name ? String(themeConfig.name).toLowerCase() : '';
-    var i;
-
-    for (i = 0; i < SUPPORTED_THEMES.length; i++) {
-      if (SUPPORTED_THEMES[i] === requested) {
-        return requested;
-      }
-    }
-
-    return DEFAULT_THEME;
-  }
-
-  /**
-   * Apply the theme defined in config.theme by setting a root CSS class.
-   * Returns the resolved theme name that was applied.
-   */
-  function apply(themeConfig) {
+  function applyPhase(phase) {
     var html = document.documentElement;
-    var themeName = resolveThemeName(themeConfig);
-    var themeClass = CLASS_PREFIX + themeName;
+    var body = document.body;
+    var phaseClass = CLASS_PREFIX + phase;
 
-    clearThemeClasses(html);
+    if (activePhase === phase) {
+      return phase;
+    }
+
+    clearPhaseClasses(html);
+    clearPhaseClasses(body);
 
     if (html.classList) {
-      html.classList.add(themeClass);
+      html.classList.add(phaseClass);
     } else {
-      html.className = (html.className + ' ' + themeClass).replace(/\s+/g, ' ');
+      html.className = (html.className + ' ' + phaseClass).replace(/\s+/g, ' ');
     }
 
-    activeTheme = themeName;
-    return themeName;
+    if (body.classList) {
+      body.classList.add(phaseClass);
+    } else {
+      body.className = (body.className + ' ' + phaseClass).replace(/\s+/g, ' ');
+    }
+
+    activePhase = phase;
+    return phase;
   }
 
-  /**
-   * Return the currently active theme name.
-   */
-  function getActive() {
-    return activeTheme;
+  function update(now) {
+    var phase = AmbientDisplay.dayPhase.getCurrentPhase(now || new Date());
+    return applyPhase(phase);
   }
 
-  /**
-   * Return the list of supported theme identifiers.
-   */
-  function getSupported() {
-    return SUPPORTED_THEMES.slice();
+  function startAutoUpdate() {
+    if (checkTimer) {
+      window.clearInterval(checkTimer);
+    }
+    update(new Date());
+    checkTimer = window.setInterval(function () {
+      update(new Date());
+    }, 60000);
+  }
+
+  function stopAutoUpdate() {
+    if (checkTimer) {
+      window.clearInterval(checkTimer);
+      checkTimer = null;
+    }
+    activePhase = null;
+  }
+
+  function getActivePhase() {
+    return activePhase;
   }
 
   return {
-    apply: apply,
-    getActive: getActive,
-    getSupported: getSupported
+    applyPhase: applyPhase,
+    update: update,
+    startAutoUpdate: startAutoUpdate,
+    stopAutoUpdate: stopAutoUpdate,
+    getActivePhase: getActivePhase
   };
-}());
+})();

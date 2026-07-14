@@ -1,8 +1,5 @@
 /**
- * config-loader.js — Configuration loader for Ambient Display
- *
- * Fetches config/config.json over HTTP and validates the platform schema.
- * Uses XMLHttpRequest for broad Safari compatibility (including older iOS).
+ * config-loader.js — Load and normalize config/config.json (ES5)
  */
 
 /* global AmbientDisplay */
@@ -10,119 +7,141 @@ var AmbientDisplay = AmbientDisplay || {};
 
 AmbientDisplay.configLoader = (function () {
   var CONFIG_PATH = 'config/config.json';
-  var SUPPORTED_THEMES = ['light', 'dark', 'midnight', 'minimal'];
-  var SUPPORTED_LAYOUTS = ['center', 'stack', 'grid', 'fullscreen', 'top-bottom'];
-  var DEFAULT_CONFIG = {
-    version: '0.0.0',
-    theme: { name: 'dark' },
-    layout: {
-      type: 'center',
-      gap: '2rem',
-      padding: '2rem',
-      columns: 2
-    },
-    widgets: []
-  };
+  var cached = null;
 
-  /**
-   * Resolve layout type against supported values; unknown names fall back to center.
-   */
-  function normalizeLayoutType(name) {
-    var requested = typeof name === 'string' ? name.toLowerCase() : '';
+  function isArray(value) {
+    return Object.prototype.toString.call(value) === '[object Array]';
+  }
+
+  function findCard(cards, type) {
     var i;
-
-    for (i = 0; i < SUPPORTED_LAYOUTS.length; i++) {
-      if (SUPPORTED_LAYOUTS[i] === requested) {
-        return requested;
+    for (i = 0; i < cards.length; i++) {
+      if (cards[i].type === type) {
+        return cards[i];
       }
     }
-
-    return DEFAULT_CONFIG.layout.type;
+    return null;
   }
 
-  /**
-   * Normalize layout block from config.json.
-   */
-  function normalizeLayout(layoutConfig) {
-    var layout = layoutConfig || {};
-    var columns = parseInt(layout.columns, 10);
-
-    if (isNaN(columns) || columns < 1) {
-      columns = DEFAULT_CONFIG.layout.columns;
-    }
-
-    return {
-      type: normalizeLayoutType(layout.type),
-      gap: typeof layout.gap === 'string' ? layout.gap : DEFAULT_CONFIG.layout.gap,
-      padding: typeof layout.padding === 'string' ? layout.padding : DEFAULT_CONFIG.layout.padding,
-      columns: columns
-    };
-  }
-
-  /**
-   * Resolve theme name against supported values; unknown names fall back to dark.
-   */
-  function normalizeThemeName(name) {
-    var requested = typeof name === 'string' ? name.toLowerCase() : '';
-    var i;
-
-    for (i = 0; i < SUPPORTED_THEMES.length; i++) {
-      if (SUPPORTED_THEMES[i] === requested) {
-        return requested;
-      }
-    }
-
-    return DEFAULT_CONFIG.theme.name;
-  }
-
-  /**
-   * Normalize scheduler block and scene list from config.json.
-   */
-  function normalizeScheduler(schedulerConfig, baseConfig) {
-    var scheduler = schedulerConfig || {};
-    var scenes = Object.prototype.toString.call(scheduler.scenes) === '[object Array]'
-      ? scheduler.scenes
+  function migrateFromCards(raw) {
+    var cards = isArray(raw.cards) ? raw.cards : [];
+    var weatherCard = findCard(cards, 'weather');
+    var timelineCard = findCard(cards, 'timeline');
+    var photoCard = findCard(cards, 'photo');
+    var notesCard = findCard(cards, 'notes');
+    var quoteCard = findCard(cards, 'quote');
+    var timelineItems = timelineCard && timelineCard.options && timelineCard.options.items
+      ? timelineCard.options.items
       : [];
+    var agendaItems = [];
+    var i;
+    var item;
+
+    for (i = 0; i < timelineItems.length; i++) {
+      item = timelineItems[i];
+      agendaItems.push({
+        type: item.icon === 'flag' ? 'deadline' : item.icon === 'travel' ? 'travel' : 'appointment',
+        title: item.title,
+        date: item.date,
+        time: item.time || null
+      });
+    }
 
     return {
-      enabled: scheduler.enabled === true,
-      scenes: scenes
-    };
-  }
-
-  /**
-   * Ensure required top-level fields exist with safe defaults.
-   */
-  function normalizeConfig(rawConfig) {
-    var config = rawConfig || {};
-    var theme = config.theme || {};
-    var normalized = {
-      version: typeof config.version === 'string' ? config.version : DEFAULT_CONFIG.version,
-      theme: {
-        name: normalizeThemeName(theme.name)
+      version: '3.1.0',
+      user: raw.user || { name: 'Guest' },
+      shell: raw.shell || {},
+      settings: raw.settings || {},
+      theme: raw.theme || { autoPhase: true },
+      weather: weatherCard && weatherCard.options ? weatherCard.options : {},
+      agenda: { items: agendaItems },
+      photos: {
+        album: 'Memories',
+        items: photoCard && photoCard.options && photoCard.options.src
+          ? [{ src: photoCard.options.src, caption: photoCard.options.caption || '' }]
+          : []
       },
-      layout: normalizeLayout(config.layout),
-      widgets: Object.prototype.toString.call(config.widgets) === '[object Array]'
-        ? config.widgets
-        : DEFAULT_CONFIG.widgets,
-      scheduler: null
+      quotes: quoteCard && quoteCard.options && quoteCard.options.quotes
+        ? quoteCard.options.quotes
+        : [],
+      notes: notesCard && notesCard.options && notesCard.options.notes
+        ? notesCard.options.notes
+        : [],
+      calendar: { events: [] },
+      personalMessages: isArray(raw.personalMessages) ? raw.personalMessages : []
     };
-
-    normalized.scheduler = normalizeScheduler(config.scheduler, normalized);
-
-    return normalized;
   }
 
-  /**
-   * Load configuration from disk.
-   *
-   * @param {Function} callback - function(error, config)
-   */
+  function normalizeConfig(raw) {
+    var config = raw || {};
+    var hasV3 = config.weather || config.agenda || config.photos || config.quotes || config.notes || config.calendar;
+
+    if (!hasV3 && isArray(config.cards) && config.cards.length) {
+      config = migrateFromCards(config);
+    }
+
+    return {
+      version: config.version || '3.1.0',
+      user: {
+        name: config.user && config.user.name ? String(config.user.name) : 'Guest'
+      },
+      shell: {
+        hourFormat: config.shell && config.shell.hourFormat === '24' ? '24' : '12',
+        showSeconds: config.shell ? config.shell.showSeconds !== false : true,
+        timezone: config.shell && config.shell.timezone ? config.shell.timezone : null
+      },
+      settings: {
+        ambientRotationMs: config.settings && config.settings.ambientRotationMs
+          ? config.settings.ambientRotationMs
+          : 45000,
+        photoRotationMinutes: config.settings && config.settings.photoRotationMinutes
+          ? config.settings.photoRotationMinutes
+          : 30,
+        contentRefreshMs: config.settings && config.settings.contentRefreshMs
+          ? config.settings.contentRefreshMs
+          : 60000
+      },
+      theme: {
+        autoPhase: config.theme ? config.theme.autoPhase !== false : true
+      },
+      display: {
+        target: config.display && config.display.target
+          ? String(config.display.target)
+          : 'ipad-mini-a1455',
+        width: config.display && config.display.width ? config.display.width : 1024,
+        height: config.display && config.display.height ? config.display.height : 768,
+        orientation: config.display && config.display.orientation
+          ? String(config.display.orientation)
+          : 'landscape'
+      },
+      weather: config.weather || {},
+      agenda: {
+        items: config.agenda && isArray(config.agenda.items) ? config.agenda.items : []
+      },
+      photos: {
+        album: config.photos && config.photos.album ? config.photos.album : 'Memories',
+        rotationMinutes: config.photos && config.photos.rotationMinutes
+          ? config.photos.rotationMinutes
+          : null,
+        items: config.photos && isArray(config.photos.items) ? config.photos.items : []
+      },
+      quotes: isArray(config.quotes) ? config.quotes : [],
+      notes: isArray(config.notes) ? config.notes : [],
+      calendar: {
+        events: config.calendar && isArray(config.calendar.events) ? config.calendar.events : []
+      },
+      personalMessages: isArray(config.personalMessages) ? config.personalMessages : []
+    };
+  }
+
   function load(callback) {
+    if (cached) {
+      callback(null, cached);
+      return;
+    }
+
     var xhr = new XMLHttpRequest();
-
     xhr.open('GET', CONFIG_PATH, true);
-
     xhr.onreadystatechange = function () {
       if (xhr.readyState !== 4) {
         return;
@@ -130,25 +149,34 @@ AmbientDisplay.configLoader = (function () {
 
       if (xhr.status >= 200 && xhr.status < 300) {
         try {
-          callback(null, normalizeConfig(JSON.parse(xhr.responseText)));
-        } catch (parseError) {
-          callback(parseError, null);
+          cached = normalizeConfig(JSON.parse(xhr.responseText));
+          callback(null, cached);
+        } catch (e) {
+          callback(e, null);
         }
         return;
       }
 
       callback(new Error('Unable to load config (HTTP ' + xhr.status + ')'), null);
     };
-
     xhr.onerror = function () {
       callback(new Error('Network error while loading config'), null);
     };
-
     xhr.send(null);
+  }
+
+  function setConfig(config) {
+    cached = normalizeConfig(config);
+  }
+
+  function getConfig() {
+    return cached;
   }
 
   return {
     load: load,
+    setConfig: setConfig,
+    getConfig: getConfig,
     normalizeConfig: normalizeConfig
   };
 }());

@@ -2,43 +2,40 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-
-  <!-- iOS / iPad standalone web app support -->
+  <meta name="viewport" content="width=1024, height=768, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Ambient Display">
-
   <title>Ambient Display</title>
   <link rel="stylesheet" href="css/app.css">
-  <link rel="stylesheet" href="css/themes.css">
-  <link rel="stylesheet" href="css/layouts.css">
-  <link rel="stylesheet" href="css/assets.css">
-  <link rel="stylesheet" href="widgets/clock.css">
+  <link rel="stylesheet" href="css/ipad-mini.css">
 </head>
 <body>
-  <!-- Root mount point for the display renderer -->
+  <div class="ambient-portrait-notice" aria-live="polite">
+    Please rotate to landscape mode
+  </div>
   <div id="ambient-root" class="ambient-root"></div>
-
   <noscript>
     <p class="ambient-noscript">Ambient Display requires JavaScript to run.</p>
   </noscript>
-
-  <!--
-    Script load order matters: each file attaches to the shared AmbientDisplay
-    namespace before app.js bootstraps the platform.
-  -->
-  <script src="js/storage.js"></script>
   <script src="js/config-loader.js"></script>
+  <script src="js/day-phase.js"></script>
+  <script src="providers/utils.js"></script>
+  <script src="providers/base-provider.js"></script>
+  <script src="providers/provider-registry.js"></script>
+  <script src="providers/clock-provider.js"></script>
+  <script src="providers/agenda-provider.js"></script>
+  <script src="providers/weather-provider.js"></script>
+  <script src="providers/photo-provider.js"></script>
+  <script src="providers/quote-provider.js"></script>
+  <script src="providers/personal-message-provider.js"></script>
+  <script src="providers/calendar-provider.js"></script>
+  <script src="providers/notes-provider.js"></script>
+  <script src="js/presentation-rules.js"></script>
+  <script src="js/presentation-engine.js"></script>
   <script src="js/theme-engine.js"></script>
-  <script src="js/layout-engine.js"></script>
-  <script src="js/asset-manager.js"></script>
-  <script src="js/widget-registry.js"></script>
-  <script src="widgets/clock.js"></script>
-  <script src="js/renderer.js"></script>
-  <script src="js/scheduler.js"></script>
-  <script src="js/sw-register.js"></script>
-  <script src="js/refresh-control.js"></script>
+  <script src="js/display-renderer.js"></script>
+  <script src="js/shell.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

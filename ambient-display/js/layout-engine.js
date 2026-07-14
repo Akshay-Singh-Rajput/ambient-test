@@ -2,7 +2,7 @@
  * layout-engine.js — Layout engine for Ambient Display
  *
  * Reads layout settings from config.json and applies CSS classes / variables
- * to position widget containers. Completely independent of widget internals —
+ * to position card slots. Completely independent of card internals —
  * it only understands container elements and size declarations.
  */
 
@@ -10,7 +10,7 @@
 var AmbientDisplay = AmbientDisplay || {};
 
 AmbientDisplay.layoutEngine = (function () {
-  var SUPPORTED_LAYOUTS = ['center', 'stack', 'grid', 'fullscreen', 'top-bottom'];
+  var SUPPORTED_LAYOUTS = ['center', 'stack', 'grid', 'fullscreen', 'top-bottom', 'dashboard', 'minimal'];
   var SUPPORTED_WIDTHS = ['auto', 'full', 'half', 'third', 'quarter'];
   var SUPPORTED_HEIGHTS = ['auto', 'full', 'half'];
   var DEFAULT_LAYOUT = {
@@ -83,7 +83,7 @@ AmbientDisplay.layoutEngine = (function () {
   }
 
   /**
-   * Normalize widget size, merging config overrides with widget defaults.
+   * Normalize card size, merging config overrides with card defaults.
    */
   function normalizeSize(sizeConfig, preferredSize) {
     var size = sizeConfig || {};
@@ -131,7 +131,7 @@ AmbientDisplay.layoutEngine = (function () {
   }
 
   /**
-   * Build the layout shell that holds widget containers.
+   * Build the layout shell that holds card slots.
    */
   function createLayoutContainer(layoutConfig) {
     var layout = normalizeLayout(layoutConfig);
@@ -146,16 +146,16 @@ AmbientDisplay.layoutEngine = (function () {
   }
 
   /**
-   * Apply preferred-size classes and flex/grid attributes to a widget container.
+   * Apply preferred-size classes and flex/grid attributes to a card slot.
    */
-  function applyWidgetSize(container, widgetConfig, preferredSize) {
-    var size = normalizeSize(widgetConfig.size, preferredSize);
+  function applyCardSize(container, cardConfig, preferredSize) {
+    var size = normalizeSize(cardConfig.size, preferredSize);
 
-    container.className += ' ambient-widget-size--w-' + size.width;
-    container.className += ' ambient-widget-size--h-' + size.height;
+    container.className += ' ambient-card-size--w-' + size.width;
+    container.className += ' ambient-card-size--h-' + size.height;
 
     if (size.span > 1) {
-      container.className += ' ambient-widget-size--span-' + size.span;
+      container.className += ' ambient-card-size--span-' + size.span;
       container.setAttribute('data-span', String(size.span));
     }
 
@@ -166,11 +166,32 @@ AmbientDisplay.layoutEngine = (function () {
     container.style.flexShrink = String(size.shrink);
   }
 
+  /**
+   * Map card types to dashboard grid areas (landscape-first layout).
+   */
+  var DASHBOARD_AREAS = {
+    clock: 'clock',
+    greeting: 'greeting',
+    photo: 'photo',
+    countdown: 'countdown',
+    quote: 'quote',
+    status: 'status'
+  };
+
+  function applyDashboardArea(container, type, cardConfig) {
+    var area = cardConfig && cardConfig.area ? cardConfig.area : DASHBOARD_AREAS[type];
+
+    if (area) {
+      container.setAttribute('data-dashboard-area', area);
+    }
+  }
+
   return {
     normalizeLayout: normalizeLayout,
     normalizeSize: normalizeSize,
     createLayoutContainer: createLayoutContainer,
-    applyWidgetSize: applyWidgetSize,
+    applyCardSize: applyCardSize,
+    applyDashboardArea: applyDashboardArea,
     getSupportedLayouts: function () {
       return SUPPORTED_LAYOUTS.slice();
     }

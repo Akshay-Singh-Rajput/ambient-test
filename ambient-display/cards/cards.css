@@ -1,0 +1,138 @@
+/**
+ * cards/Cards.css — Shared card styles for dashboard Cards
+ */
+
+.ambient-card-slot {
+  height: 100%;
+  min-height: 0;
+}
+
+.card {
+  height: 100%;
+  box-sizing: border-box;
+  padding: 1.25rem 1.5rem;
+  border-radius: 1.25rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  overflow: hidden;
+}
+
+.ambient-card-slot--media .card {
+  padding: 0;
+}
+
+/* --- Quote animation (CSS only) --- */
+
+.quote-card--animate {
+  -webkit-animation: ambient-quote-in 0.6s ease;
+  animation: ambient-quote-in 0.6s ease;
+}
+
+@-webkit-keyframes ambient-quote-in {
+  from {
+    opacity: 0;
+    -webkit-transform: translateY(8px);
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    -webkit-transform: translateY(0);
+    transform: translateY(0);
+  }
+}
+
+@keyframes ambient-quote-in {
+  from {
+    opacity: 0;
+    -webkit-transform: translateY(8px);
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    -webkit-transform: translateY(0);
+    transform: translateY(0);
+  }
+}
+
+/* --- Photo transitions --- */
+
+.photo-card__stage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 12rem;
+  overflow: hidden;
+  border-radius: 1.25rem;
+  background: rgba(15, 23, 42, 0.5);
+}
+
+.photo-card__stage--empty {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  justify-content: center;
+  color: rgba(248, 250, 252, 0.55);
+  font-size: 0.9375rem;
+}
+
+.photo-card__image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  -webkit-transition: opacity 0.8s ease, -webkit-transform 0.8s ease;
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.photo-card__image--visible {
+  opacity: 1;
+}
+
+.photo-card__image--cover {
+  object-fit: cover;
+}
+
+.photo-card__image--contain {
+  object-fit: contain;
+}
+
+.photo-card__image--fill {
+  object-fit: fill;
+}
+
+.photo-card--slide .photo-card__image--visible {
+  -webkit-animation: ambient-photo-slide 0.8s ease;
+  animation: ambient-photo-slide 0.8s ease;
+}
+
+@-webkit-keyframes ambient-photo-slide {
+  from {
+    -webkit-transform: translateX(12%);
+    transform: translateX(12%);
+  }
+  to {
+    -webkit-transform: translateX(0);
+    transform: translateX(0);
+  }
+}
+
+@keyframes ambient-photo-slide {
+  from {
+    -webkit-transform: translateX(12%);
+    transform: translateX(12%);
+  }
+  to {
+    -webkit-transform: translateX(0);
+    transform: translateX(0);
+  }
+}

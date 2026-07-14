@@ -1,99 +1,160 @@
 {
-  "version": "1.0.0",
-  "scheduler": {
-    "enabled": true,
-    "scenes": [
+  "version": "3.1.0",
+  "user": {
+    "name": "Akshay"
+  },
+  "shell": {
+    "hourFormat": "12",
+    "showSeconds": true,
+    "timezone": "Asia/Kolkata"
+  },
+  "settings": {
+    "ambientRotationMs": 45000,
+    "photoRotationMinutes": 30,
+    "contentRefreshMs": 60000
+  },
+  "theme": {
+    "autoPhase": true
+  },
+  "display": {
+    "target": "ipad-mini-a1455",
+    "width": 1024,
+    "height": 768,
+    "orientation": "landscape"
+  },
+  "weather": {
+    "location": "Mumbai",
+    "temperature": 28,
+    "unit": "C",
+    "condition": "Partly Cloudy",
+    "high": 31,
+    "low": 24
+  },
+  "agenda": {
+    "items": [
       {
-        "id": "morning",
-        "start": "05:00",
-        "theme": { "name": "light" },
-        "layout": { "type": "center", "gap": "2rem", "padding": "2rem" },
-        "widgets": [
-          {
-            "type": "clock",
-            "id": "morning-clock",
-            "size": { "width": "auto", "height": "auto" },
-            "options": {
-              "showSeconds": true,
-              "showDate": true,
-              "hourFormat": "12",
-              "timezone": "Asia/Kolkata"
-            }
-          }
-        ]
+        "type": "appointment",
+        "title": "Team standup",
+        "date": "today",
+        "time": "10:30"
       },
       {
-        "id": "day",
-        "start": "09:00",
-        "theme": { "name": "light" },
-        "layout": { "type": "center", "gap": "2rem", "padding": "2rem" },
-        "widgets": [
-          {
-            "type": "clock",
-            "id": "day-clock",
-            "size": { "width": "auto", "height": "auto" },
-            "options": {
-              "showSeconds": true,
-              "showDate": true,
-              "hourFormat": "24",
-              "timezone": "Asia/Kolkata"
-            }
-          }
-        ]
+        "type": "deadline",
+        "title": "Project milestone review",
+        "date": "2026-07-18",
+        "time": "18:00"
       },
       {
-        "id": "evening",
-        "start": "17:00",
-        "theme": { "name": "dark" },
-        "layout": { "type": "center", "gap": "2rem", "padding": "2rem" },
-        "widgets": [
-          {
-            "type": "clock",
-            "id": "evening-clock",
-            "size": { "width": "auto", "height": "auto" },
-            "options": {
-              "showSeconds": true,
-              "showDate": true,
-              "hourFormat": "12",
-              "timezone": "Asia/Kolkata"
-            }
-          }
-        ]
+        "type": "birthday",
+        "title": "Priya's Birthday",
+        "date": "2026-07-20"
       },
       {
-        "id": "night",
-        "start": "21:00",
-        "theme": { "name": "midnight" },
-        "layout": { "type": "center", "gap": "2rem", "padding": "2rem" },
-        "widgets": [
-          {
-            "type": "clock",
-            "id": "night-clock",
-            "size": { "width": "auto", "height": "auto" },
-            "options": {
-              "showSeconds": true,
-              "showDate": true,
-              "hourFormat": "12",
-              "timezone": "Asia/Kolkata"
-            }
-          }
-        ]
+        "type": "travel",
+        "title": "Weekend trip to Goa",
+        "date": "2026-07-19"
+      },
+      {
+        "type": "reminder",
+        "title": "Pick up anniversary gift",
+        "date": "tomorrow"
       }
     ]
   },
-  "theme": { "name": "dark" },
-  "layout": { "type": "center", "gap": "2rem", "padding": "2rem", "columns": 2 },
-  "widgets": [
-    {
-      "type": "clock",
-      "id": "primary-clock",
-      "size": { "width": "auto", "height": "auto" },
-      "options": {
-        "showSeconds": true,
-        "showDate": true,
-        "hourFormat": "12",
-        "timezone": "Asia/Kolkata"
+  "photos": {
+    "album": "Memories",
+    "rotationMinutes": 30,
+    "items": [
+      {
+        "src": "assets/photos/landscape-1.svg",
+        "caption": "Golden hour at the coast"
+      },
+      {
+        "src": "assets/photos/landscape-2.svg",
+        "caption": "Morning light through the trees"
+      },
+      {
+        "src": "assets/photos/landscape-3.svg",
+        "caption": "Quiet evening by the water"
       }
+    ]
+  },
+  "quotes": [
+    {
+      "text": "The present moment is filled with joy and happiness. If you are attentive, you will see it.",
+      "author": "Thich Nhat Hanh"
+    },
+    {
+      "text": "Simplicity is the ultimate sophistication.",
+      "author": "Leonardo da Vinci"
+    },
+    {
+      "text": "Do what you can, with what you have, where you are.",
+      "author": "Theodore Roosevelt"
+    },
+    {
+      "text": "Stay hungry, stay foolish.",
+      "author": "Steve Jobs"
+    }
+  ],
+  "notes": [
+    {
+      "text": "Water the plants before leaving",
+      "pinned": true,
+      "checked": false
+    },
+    {
+      "text": "Review Ambient Display roadmap",
+      "pinned": true,
+      "checked": true
+    }
+  ],
+  "calendar": {
+    "events": [
+      {
+        "title": "Morning workout",
+        "date": "today",
+        "time": "07:00"
+      },
+      {
+        "title": "Team standup",
+        "date": "today",
+        "time": "10:30"
+      },
+      {
+        "title": "Lunch with Priya",
+        "date": "today",
+        "time": "13:00"
+      }
+    ]
+  },
+  "personalMessages": [
+    {
+      "scope": "daily",
+      "text": "Have a wonderful day \u2764\uFE0F"
+    },
+    {
+      "scope": "morning",
+      "text": "Good morning! Make today count."
+    },
+    {
+      "scope": "night",
+      "text": "Sleep well. Tomorrow is another opportunity."
+    },
+    {
+      "scope": "birthday",
+      "date": "2026-10-10",
+      "text": "Happy Birthday \u2764\uFE0F"
+    },
+    {
+      "scope": "deadline",
+      "date": "2026-07-27",
+      "text": "Today is the last day to submit the SBI PO application."
+    },
+    {
+      "scope": "custom",
+      "date": "2026-08-07",
+      "text": "Happy Birthday Akshay \uD83C\uDF89"
     }
   ]
 }
