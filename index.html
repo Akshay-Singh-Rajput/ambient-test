@@ -94,7 +94,7 @@ html,body{
 <div class="card pulse">
 
 <div class="message">
-❤️ Ambient Display by AK
+❤️ Ambient Display by AKshay
 </div>
 
 <div class="small">
@@ -112,27 +112,19 @@ Running...
 </div>
 
 <script>
-const clock = document.getElementById("clock");
-const date = document.getElementById("date");
-const status = document.getElementById("status");
+window.onload = function () {
 
-function updateClock() {
-    const now = new Date();
+    var clock = document.getElementById("clock");
 
-    clock.textContent = now.toLocaleTimeString();
-    date.textContent = now.toDateString();
-}
+    function tick() {
+        var now = new Date();
+        clock.innerHTML = now.toLocaleTimeString();
+    }
 
-updateClock();
+    tick();
 
-setInterval(updateClock, 1000);
-
-let seconds = 0;
-
-setInterval(() => {
-    seconds++;
-    status.textContent = `Running for ${seconds} seconds`;
-}, 1000);
+    setInterval(tick, 1000);
+};
 </script>
 
 </body>
